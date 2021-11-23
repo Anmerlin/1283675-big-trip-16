@@ -1,6 +1,6 @@
 # Проект «Большое путешествие»
 
-* Студент: [Андрей Сигаренко](https://up.htmlacademy.ru/ecmascript/16/user/1283675).
+* Студент: [Андрей Сигаренко](https://htmlacademy.ru//profile/id1283675).
 * Наставник: [Артём Рудов] (https://htmlacademy.ru/profile/artrudov).
 
 ---
