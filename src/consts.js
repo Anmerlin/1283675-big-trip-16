@@ -1,4 +1,4 @@
-const POINT_COUNT = 3;
+const POINT_COUNT = 20;
 
 const RenderingLocation = {
   BEFORE_BEGIN: 'beforebegin',

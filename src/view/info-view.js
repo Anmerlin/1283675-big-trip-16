@@ -1,15 +1,22 @@
-const createTripInfoTemplate = () => (
-  `<section class="trip-main__trip-info  trip-info">
-    <div class="trip-info__main">
-      <h1 class="trip-info__title">Amsterdam &mdash; Chamonix &mdash; Geneva</h1>
+import dayjs from 'dayjs';
 
-      <p class="trip-info__dates">Mar 18&nbsp;&mdash;&nbsp;20</p>
-    </div>
-
-    <p class="trip-info__cost">
-      Total: &euro;&nbsp;<span class="trip-info__cost-value">1230</span>
-    </p>
-  </section>`
+const getTripRoute = (points) => (
+  `<p class="trip-info__dates">
+    ${dayjs(points[0].dateStart).format('MMM DD')}&nbsp;&mdash;&nbsp;${dayjs([...points].pop().dateEnd).format('MMM DD')}
+    </p>`
 );
+
+const getTripChain = (points) => (
+  `<h1 class="trip-info__title">
+    ${(points.length <= 3) ? points.map((point) => point.destination.name).join(' &mdash; ') : `${points[0].destination.name} &mdash; ... &mdash; ${[...points].pop().destination.name}`}
+    </h1>`
+);
+
+const createTripInfoTemplate = (points) => (points.length !== 0) ? `<section class="trip-main__trip-info  trip-info">
+    <div class="trip-info__main">
+      ${getTripChain(points)}
+      ${getTripRoute(points)}
+    </div>
+  </section>` : '';
 
 export { createTripInfoTemplate };

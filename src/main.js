@@ -5,11 +5,10 @@ import { createNavigationTemplate } from './view/navigation-view.js';
 import { createFiltersTemplate } from './view/filters-view.js';
 import { createSortingTemplate } from './view/sorting-view.js';
 import { createListPointsTemplate } from './view/list-points-view.js';
-import { createEditingPointTemplate } from './view/point-edit-view.js';
-import { createNewPointTemplate } from './view/point-create-view.js';
+import { createPointTemplate } from './view/point-edit-view.js';
 import { createShowPointTemplate } from './view/point-view.js';
-import { createStatisticsTemplate } from './view/stats-view.js';
-import { createMessagesTemplate } from './view/messages-view.js';
+import { generatePoints } from './mock/point.js';
+import { sortByKey } from './helpers.js';
 
 const headerContainer = document.querySelector('.page-header');
 const headerTripInfo = headerContainer.querySelector('.trip-main');
@@ -17,10 +16,12 @@ const headerTripNavigation = headerContainer.querySelector('.trip-controls__navi
 const headerTripFilter = headerContainer.querySelector('.trip-controls__filters');
 
 const mainContainer = document.querySelector('.page-main');
-const mainWrapper = mainContainer.querySelector('.page-body__container');
 const mainTripEvents = mainContainer.querySelector('.trip-events');
 
-renderTemplate(headerTripInfo, createTripInfoTemplate(), RenderingLocation.AFTERBEGIN);
+
+const points = new Array(POINT_COUNT).fill().map(generatePoints).sort(sortByKey('dateStart'));
+
+renderTemplate(headerTripInfo, createTripInfoTemplate(points), RenderingLocation.AFTER_BEGIN);
 renderTemplate(headerTripNavigation, createNavigationTemplate());
 renderTemplate(headerTripFilter, createFiltersTemplate());
 renderTemplate(mainTripEvents, createSortingTemplate());
@@ -29,12 +30,8 @@ renderTemplate(mainTripEvents, createListPointsTemplate());
 
 const mainListTripEvents = mainTripEvents.querySelector('.trip-events__list');
 
-renderTemplate(mainListTripEvents, createEditingPointTemplate(), RenderingLocation.AFTERBEGIN);
-renderTemplate(mainListTripEvents, createNewPointTemplate());
+renderTemplate(mainListTripEvents, createPointTemplate(points[0]), RenderingLocation.AFTER_BEGIN);
 
-for (let i = 0; i < POINT_COUNT; i++) {
-  renderTemplate(mainListTripEvents, createShowPointTemplate());
+for (let i = 1; i < POINT_COUNT; i++) {
+  renderTemplate(mainListTripEvents, createShowPointTemplate(points[i]));
 }
-
-renderTemplate(mainTripEvents, createMessagesTemplate());
-renderTemplate(mainWrapper, createStatisticsTemplate());
