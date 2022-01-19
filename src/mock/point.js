@@ -1,5 +1,5 @@
 import dayjs from 'dayjs';
-import { getBoolean, getRandomIntegerRangeInclusive, getArrayRandomLengthFromValues, getRandomValueFromArray } from '../helpers.js';
+import { getBoolean, getRandomIntegerRangeInclusive, getArrayRandomLengthFromValues, getRandomValueFromArray } from '../helpers/helpers.js';
 
 const TYPE_POINTS = [
   'Taxi',

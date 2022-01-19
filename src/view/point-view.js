@@ -1,16 +1,9 @@
-import dayjs from 'dayjs';
-import { showTwoDigits } from '../helpers.js';
+// import dayjs from 'dayjs';
+import { calculateDuration, showPointDataHelper } from '../helpers/common.js';
+import { createElement } from '../helpers/helpers.js';
 
-const calculateDuration = (start, end) => {
-  const differenceInMinutes = (dayjs(end)).diff(dayjs(start), 'minutes');
-  const hours = Math.floor(differenceInMinutes / 60);
-  const minutes = differenceInMinutes - (hours * 60);
-  const days = Math.floor(hours / 24);
-
-  return `${(days !== 0) ? `${showTwoDigits(days)}D` : ''} ${(hours !== 0) ? `${showTwoDigits(hours)}H` : ''} ${showTwoDigits(minutes)}M`;
-};
-
-const showOffers = (offers) => ((offers.length !== 0) ? (`<h4 class="visually-hidden">Offers:</h4>
+const showOffers = (offers) =>
+  `<h4 class="visually-hidden">Offers:</h4>
   <ul class="event__selected-offers">
   ${offers.map((offer) =>
     `<li class="event__offer">
@@ -18,20 +11,7 @@ const showOffers = (offers) => ((offers.length !== 0) ? (`<h4 class="visually-hi
     &plus;&euro;&nbsp;
     <span class="event__offer-price">${offer.price}</span>
   </li>`).join('\n')}
-  </ul>`) : '');
-
-const showPointDataHelper = (dateStart, dateEnd) => {
-  const dateEvent = dayjs(dateStart).format('YYYY-MM-DD');
-  const shortDateEvent = dayjs(dateStart).format('MMM DD');
-
-  const timeStart = dayjs(dateStart).format('YYYY-MM-DD[T]HH:mm');
-  const shortTimeStart = dayjs(dateStart).format('HH:mm');
-
-  const timeEnd = dayjs(dateEnd).format('YYYY-MM-DD[T]HH:mm');
-  const shortTimeEnd = dayjs(dateEnd).format('HH:mm');
-
-  return [dateEvent, shortDateEvent, timeStart, shortTimeStart, timeEnd, shortTimeEnd];
-};
+  </ul>`;
 
 const createShowPointTemplate = (point) => {
   const { type, destination: {name}, dateStart, dateEnd, basePrice, offers, isFavorite } = point;
@@ -55,7 +35,7 @@ const createShowPointTemplate = (point) => {
     <p class="event__price">
       &euro;&nbsp;<span class="event__price-value">${basePrice}</span>
     </p>
-    ${showOffers(offers)}
+    ${offers.length !== 0 ? showOffers(offers) : ''}
     <button class="event__favorite-btn ${(isFavorite) ? 'event__favorite-btn--active' : ''}" type="button">
       <span class="visually-hidden">Add to favorite</span>
       <svg class="event__favorite-icon" width="28" height="28" viewBox="0 0 28 28">
@@ -69,4 +49,27 @@ const createShowPointTemplate = (point) => {
 </li>`;
 };
 
-export { createShowPointTemplate };
+export default class Point {
+  constructor(point) {
+    this._element = null;
+    this._point = point;
+  }
+
+  getTemplate() {
+    return createShowPointTemplate(this._point);
+  }
+
+  getElement() {
+    if (!this._element) {
+      this._element = createElement(this.getTemplate());
+    }
+
+    return this._element;
+  }
+
+  removeElement() {
+    this._element = null;
+  }
+}
+
+// export { createShowPointTemplate };

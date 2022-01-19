@@ -1,3 +1,5 @@
+import { createElement } from '../helpers/helpers.js';
+
 const createSortingTemplate = () => (
   `<form class="trip-events__trip-sort  trip-sort" action="#" method="get">
   <div class="trip-sort__item  trip-sort__item--day">
@@ -27,4 +29,27 @@ const createSortingTemplate = () => (
 </form>`
 );
 
-export { createSortingTemplate };
+export default class Sorting {
+  constructor(points) {
+    this._element = null;
+    this._points = points;
+  }
+
+  getTemplate() {
+    return createSortingTemplate(this._points);
+  }
+
+  getElement() {
+    if (!this._element) {
+      this._element = createElement(this.getTemplate());
+    }
+
+    return this._element;
+  }
+
+  removeElement() {
+    this._element = null;
+  }
+}
+
+// export { createSortingTemplate };

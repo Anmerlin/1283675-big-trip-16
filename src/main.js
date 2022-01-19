@@ -1,37 +1,55 @@
-import { POINT_COUNT, RenderingLocation } from './consts.js';
-import { renderTemplate } from './helpers.js';
-import { createTripInfoTemplate } from './view/info-view.js';
-import { createNavigationTemplate } from './view/navigation-view.js';
-import { createFiltersTemplate } from './view/filters-view.js';
-import { createSortingTemplate } from './view/sorting-view.js';
-import { createListPointsTemplate } from './view/list-points-view.js';
-import { createPointTemplate } from './view/point-edit-view.js';
-import { createShowPointTemplate } from './view/point-view.js';
+import { POINT_COUNT, RenderingLocation } from './helpers/consts.js';
+import { render, sortByKey } from './helpers/helpers.js';
 import { generatePoints } from './mock/point.js';
-import { sortByKey } from './helpers.js';
+import TripInfoView from './view/info-view.js';
+import NavigationView from './view/navigation-view.js';
+import FilterView from './view/filters-view.js';
+import SortingView from './view/sorting-view.js';
+import ListPointsView from './view/list-points-view.js';
+import PointCreateView from './view/point-edit-view.js';
+import PointView from './view/point-view.js';
 
-const headerContainer = document.querySelector('.page-header');
-const headerTripInfo = headerContainer.querySelector('.trip-main');
-const headerTripNavigation = headerContainer.querySelector('.trip-controls__navigation');
-const headerTripFilter = headerContainer.querySelector('.trip-controls__filters');
+const headerElement = document.querySelector('.page-header');
+const mainElement = document.querySelector('.page-main');
 
-const mainContainer = document.querySelector('.page-main');
-const mainTripEvents = mainContainer.querySelector('.trip-events');
+const navigationElement = headerElement.querySelector('.trip-controls__navigation');
+const tripMainElement = headerElement.querySelector('.trip-main');
+const tripFilterElement = headerElement.querySelector('.trip-controls__filters');
+const tripEventsElement = mainElement.querySelector('.trip-events');
 
+const points = new Array(POINT_COUNT).fill().map(generatePoints).sort(sortByKey('dateEnd'));
 
-const points = new Array(POINT_COUNT).fill().map(generatePoints).sort(sortByKey('dateStart'));
+const renderPoint = (containerElement, point) => {
+  const componentPoint = new PointView(point);
+  const componentPointCreate = new PointCreateView(point, true);
 
-renderTemplate(headerTripInfo, createTripInfoTemplate(points), RenderingLocation.AFTER_BEGIN);
-renderTemplate(headerTripNavigation, createNavigationTemplate());
-renderTemplate(headerTripFilter, createFiltersTemplate());
-renderTemplate(mainTripEvents, createSortingTemplate());
+  const replacePointToEditForm = () => {
+    containerElement.replaceChild(componentPointCreate.getElement(), componentPoint.getElement());
+  };
 
-renderTemplate(mainTripEvents, createListPointsTemplate());
+  const replaceEditFormToPoint = () => {
+    containerElement.replaceChild(componentPoint.getElement(), componentPointCreate.getElement());
+  };
 
-const mainListTripEvents = mainTripEvents.querySelector('.trip-events__list');
+  componentPoint.getElement().querySelector('.event__rollup-btn').addEventListener('click', () => replacePointToEditForm());
 
-renderTemplate(mainListTripEvents, createPointTemplate(points[0]), RenderingLocation.AFTER_BEGIN);
+  componentPointCreate.getElement().querySelector('form').addEventListener('submit', () => replaceEditFormToPoint());
+
+  render(containerElement, componentPoint.getElement());
+};
+
+render(navigationElement, new NavigationView().getElement());
+
+if (points.length !== 0) {
+  render(tripMainElement, new TripInfoView(points).getElement(), RenderingLocation.AFTER_BEGIN);
+}
+
+render(tripFilterElement, new FilterView().getElement());
+render(tripEventsElement, new SortingView().getElement());
+
+const pointsListComponent = new ListPointsView();
+render(tripEventsElement, pointsListComponent.getElement());
 
 for (let i = 1; i < POINT_COUNT; i++) {
-  renderTemplate(mainListTripEvents, createShowPointTemplate(points[i]));
+  renderPoint(pointsListComponent.getElement(), points[i]);
 }

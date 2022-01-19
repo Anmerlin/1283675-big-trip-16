@@ -1,7 +1,22 @@
 import { RenderingLocation } from './consts.js';
 
-const renderTemplate = (container, template, position = RenderingLocation.BEFORE_END) => {
+/* const renderTemplate = (container, template, position = RenderingLocation.BEFORE_END) => {
   container.insertAdjacentHTML(position, template);
+}; */
+
+const render = (container, element, position = RenderingLocation.BEFORE_END) => {
+  if (position === RenderingLocation.AFTER_BEGIN) {
+    container.prepend(element);
+  } else {
+    container.append(element);
+  }
+};
+
+const createElement = (template) => {
+  const wrapper = document.createElement('div');
+  wrapper.innerHTML = template;
+
+  return wrapper.firstChild;
 };
 
 const getRandomIntegerRangeInclusive = (fromValue = 0, toValue = 1) => {
@@ -36,4 +51,4 @@ const sortByKey = (key) => (a, b) => a[key] > b[key] ? 1 : -1;
 
 const getBoolean = () => Boolean(getRandomIntegerRangeInclusive(0, 1));
 
-export { showTwoDigits, sortByKey, getBoolean, renderTemplate, getRandomIntegerRangeInclusive, getArrayRandomLengthFromValues, getRandomValueFromArray };
+export { render, createElement, showTwoDigits, sortByKey, getBoolean, getRandomIntegerRangeInclusive, getArrayRandomLengthFromValues, getRandomValueFromArray };
