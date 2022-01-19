@@ -1,5 +1,5 @@
 import { POINT_COUNT, RenderingLocation } from './helpers/consts.js';
-import { render, sortByKey } from './helpers/helpers.js';
+import { render, sortByKey, isEscEvent } from './helpers/helpers.js';
 import { generatePoints } from './mock/point.js';
 import TripInfoView from './view/info-view.js';
 import NavigationView from './view/navigation-view.js';
@@ -8,6 +8,7 @@ import SortingView from './view/sorting-view.js';
 import ListPointsView from './view/list-points-view.js';
 import PointCreateView from './view/point-edit-view.js';
 import PointView from './view/point-view.js';
+import MessageView from './view/messages-view.js';
 
 const headerElement = document.querySelector('.page-header');
 const mainElement = document.querySelector('.page-main');
@@ -31,9 +32,24 @@ const renderPoint = (containerElement, point) => {
     containerElement.replaceChild(componentPoint.getElement(), componentPointCreate.getElement());
   };
 
-  componentPoint.getElement().querySelector('.event__rollup-btn').addEventListener('click', () => replacePointToEditForm());
+  const onEscCloseEdit = (evt) => {
+    if (isEscEvent(evt)) {
+      evt.preventDefault();
+      replaceEditFormToPoint();
+      document.removeEventListener('keydown', onEscCloseEdit);
+    }
+  };
 
-  componentPointCreate.getElement().querySelector('form').addEventListener('submit', () => replaceEditFormToPoint());
+  componentPoint.getElement().querySelector('.event__rollup-btn').addEventListener('click', () => {
+    replacePointToEditForm();
+    document.addEventListener('keydown', onEscCloseEdit);
+  });
+
+  componentPointCreate.getElement().querySelector('form').addEventListener('submit', (evt) => {
+    evt.preventDefault();
+    replaceEditFormToPoint();
+    document.removeEventListener('keydown', onEscCloseEdit);
+  });
 
   render(containerElement, componentPoint.getElement());
 };
@@ -50,6 +66,10 @@ render(tripEventsElement, new SortingView().getElement());
 const pointsListComponent = new ListPointsView();
 render(tripEventsElement, pointsListComponent.getElement());
 
-for (let i = 1; i < POINT_COUNT; i++) {
-  renderPoint(pointsListComponent.getElement(), points[i]);
+if (!points.length) {
+  render(tripEventsElement, new MessageView().getElement());
+} else {
+  for (let i = 1; i < POINT_COUNT; i++) {
+    renderPoint(pointsListComponent.getElement(), points[i]);
+  }
 }

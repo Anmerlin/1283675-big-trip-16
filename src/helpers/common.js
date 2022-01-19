@@ -2,6 +2,12 @@ import dayjs from 'dayjs';
 import { DESTINATIONS_COUNT } from '../helpers/consts.js';
 import { showTwoDigits } from '../helpers/helpers.js';
 
+const messages = {
+  'Everything': 'Click New Event to create your first point',
+  'Past': 'There are no past events now',
+  'Future': 'There are no future events now',
+};
+
 const calculateDuration = (start, end) => {
   const differenceInMinutes = (dayjs(end)).diff(dayjs(start), 'minutes');
   const hours = Math.floor(differenceInMinutes / 60);
@@ -47,4 +53,6 @@ const getTripCost = (points) => (
   ), 0)
 );
 
-export { calculateDuration, showPointDataHelper, getTravelTime, getTripRoute, getTripCost };
+const showMessage = (filterState) => messages[filterState];
+
+export { calculateDuration, showPointDataHelper, getTravelTime, getTripRoute, getTripCost, showMessage };

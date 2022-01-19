@@ -71,5 +71,3 @@ export default class Point {
     this._element = null;
   }
 }
-
-// export { createShowPointTemplate };

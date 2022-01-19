@@ -26,5 +26,3 @@ export default class ListPoints {
     this._element = null;
   }
 }
-
-// export { createListPointsTemplate };

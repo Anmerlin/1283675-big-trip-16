@@ -1,8 +1,9 @@
+import { showMessage } from '../helpers/common.js';
 import { createElement } from '../helpers/helpers.js';
 
 const createMessageTemplate = () => (
   `<p class="trip-events__msg">
-    Click New Event to create your first point
+    ${showMessage('Everything')}
   </p>`
 );
 

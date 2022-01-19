@@ -51,4 +51,6 @@ const sortByKey = (key) => (a, b) => a[key] > b[key] ? 1 : -1;
 
 const getBoolean = () => Boolean(getRandomIntegerRangeInclusive(0, 1));
 
-export { render, createElement, showTwoDigits, sortByKey, getBoolean, getRandomIntegerRangeInclusive, getArrayRandomLengthFromValues, getRandomValueFromArray };
+const isEscEvent = (evt) => evt.key === 'Escape' || evt.key === 'Esc';
+
+export { render, createElement, showTwoDigits, sortByKey, getBoolean, getRandomIntegerRangeInclusive, getArrayRandomLengthFromValues, getRandomValueFromArray, isEscEvent };
