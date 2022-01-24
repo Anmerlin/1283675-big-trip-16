@@ -1,6 +1,5 @@
-// import dayjs from 'dayjs';
 import { calculateDuration, showPointDataHelper } from '../helpers/common.js';
-import { createElement } from '../helpers/helpers.js';
+import AbstractView from './abstract-view.js';
 
 const showOffers = (offers) =>
   `<h4 class="visually-hidden">Offers:</h4>
@@ -49,25 +48,25 @@ const createShowPointTemplate = (point) => {
 </li>`;
 };
 
-export default class Point {
+export default class PointView extends AbstractView {
+  #point = null;
+
   constructor(point) {
-    this._element = null;
-    this._point = point;
+    super();
+    this.#point = point;
   }
 
-  getTemplate() {
-    return createShowPointTemplate(this._point);
+  get template() {
+    return createShowPointTemplate(this.#point);
   }
 
-  getElement() {
-    if (!this._element) {
-      this._element = createElement(this.getTemplate());
-    }
-
-    return this._element;
+  setEditButtonClickHandler = (callback) => {
+    this._callback.editButtonClick = callback;
+    this.element.querySelector('.event__rollup-btn').addEventListener('click', this.#editButtonClickHandler);
   }
 
-  removeElement() {
-    this._element = null;
+  #editButtonClickHandler = (evt) => {
+    evt.preventDefault();
+    this._callback.editButtonClick();
   }
 }

@@ -1,24 +1,3 @@
-import { RenderingLocation } from './consts.js';
-
-/* const renderTemplate = (container, template, position = RenderingLocation.BEFORE_END) => {
-  container.insertAdjacentHTML(position, template);
-}; */
-
-const render = (container, element, position = RenderingLocation.BEFORE_END) => {
-  if (position === RenderingLocation.AFTER_BEGIN) {
-    container.prepend(element);
-  } else {
-    container.append(element);
-  }
-};
-
-const createElement = (template) => {
-  const wrapper = document.createElement('div');
-  wrapper.innerHTML = template;
-
-  return wrapper.firstChild;
-};
-
 const getRandomIntegerRangeInclusive = (fromValue = 0, toValue = 1) => {
   const randomValue = fromValue + Math.random() * (toValue - fromValue + 1);
   return Math.floor(randomValue);
@@ -53,4 +32,4 @@ const getBoolean = () => Boolean(getRandomIntegerRangeInclusive(0, 1));
 
 const isEscEvent = (evt) => evt.key === 'Escape' || evt.key === 'Esc';
 
-export { render, createElement, showTwoDigits, sortByKey, getBoolean, getRandomIntegerRangeInclusive, getArrayRandomLengthFromValues, getRandomValueFromArray, isEscEvent };
+export { showTwoDigits, sortByKey, getBoolean, getRandomIntegerRangeInclusive, getArrayRandomLengthFromValues, getRandomValueFromArray, isEscEvent };

@@ -1,12 +1,13 @@
 import { POINT_COUNT, RenderingLocation } from './helpers/consts.js';
-import { render, sortByKey, isEscEvent } from './helpers/helpers.js';
+import { sortByKey, isEscEvent } from './helpers/helpers.js';
+import { render, replace } from './helpers/render.js';
 import { generatePoints } from './mock/point.js';
 import TripInfoView from './view/info-view.js';
 import NavigationView from './view/navigation-view.js';
 import FilterView from './view/filters-view.js';
 import SortingView from './view/sorting-view.js';
 import ListPointsView from './view/list-points-view.js';
-import PointCreateView from './view/point-edit-view.js';
+import PointEditView from './view/point-edit-view.js';
 import PointView from './view/point-view.js';
 import MessageView from './view/messages-view.js';
 
@@ -18,18 +19,18 @@ const tripMainElement = headerElement.querySelector('.trip-main');
 const tripFilterElement = headerElement.querySelector('.trip-controls__filters');
 const tripEventsElement = mainElement.querySelector('.trip-events');
 
-const points = new Array(POINT_COUNT).fill().map(generatePoints).sort(sortByKey('dateEnd'));
+const pointsTrip = new Array(POINT_COUNT).fill().map(generatePoints).sort(sortByKey('dateStart'));
 
 const renderPoint = (containerElement, point) => {
-  const componentPoint = new PointView(point);
-  const componentPointCreate = new PointCreateView(point, true);
+  const pointComponent = new PointView(point);
+  const pointEditComponent = new PointEditView(point, true);
 
   const replacePointToEditForm = () => {
-    containerElement.replaceChild(componentPointCreate.getElement(), componentPoint.getElement());
+    replace(pointEditComponent, pointComponent);
   };
 
   const replaceEditFormToPoint = () => {
-    containerElement.replaceChild(componentPoint.getElement(), componentPointCreate.getElement());
+    replace(pointComponent, pointEditComponent);
   };
 
   const onEscCloseEdit = (evt) => {
@@ -40,36 +41,50 @@ const renderPoint = (containerElement, point) => {
     }
   };
 
-  componentPoint.getElement().querySelector('.event__rollup-btn').addEventListener('click', () => {
+  pointComponent.setEditButtonClickHandler(() => {
     replacePointToEditForm();
     document.addEventListener('keydown', onEscCloseEdit);
   });
 
-  componentPointCreate.getElement().querySelector('form').addEventListener('submit', (evt) => {
-    evt.preventDefault();
+  pointEditComponent.setFormSubmitHandler(() => {
     replaceEditFormToPoint();
     document.removeEventListener('keydown', onEscCloseEdit);
   });
 
-  render(containerElement, componentPoint.getElement());
+  // pointEditComponent.setEditButtonClickHandler(() => {
+  //   replaceEditFormToPoint();
+  //   document.removeEventListener('keydown', onEscCloseEdit);
+  // });
+
+  render(containerElement, pointComponent);
 };
 
-render(navigationElement, new NavigationView().getElement());
+const renderHeader = (points) => {
+  const filterComponent = new FilterView(points);
 
-if (points.length !== 0) {
-  render(tripMainElement, new TripInfoView(points).getElement(), RenderingLocation.AFTER_BEGIN);
-}
+  render(navigationElement, new NavigationView());
 
-render(tripFilterElement, new FilterView().getElement());
-render(tripEventsElement, new SortingView().getElement());
-
-const pointsListComponent = new ListPointsView();
-render(tripEventsElement, pointsListComponent.getElement());
-
-if (!points.length) {
-  render(tripEventsElement, new MessageView().getElement());
-} else {
-  for (let i = 1; i < POINT_COUNT; i++) {
-    renderPoint(pointsListComponent.getElement(), points[i]);
+  if (points.length !== 0) {
+    render(tripMainElement, new TripInfoView(points), RenderingLocation.AFTER_BEGIN);
   }
-}
+
+  render(tripFilterElement, filterComponent);
+};
+
+const renderBoard = (points) => {
+  const pointsListComponent = new ListPointsView();
+
+  render(tripEventsElement, new SortingView());
+  render(tripEventsElement, pointsListComponent);
+
+  if (!points.length) {
+    render(tripEventsElement, new MessageView());
+  } else {
+    for (let i = 1; i < POINT_COUNT; i++) {
+      renderPoint(pointsListComponent, points[i]);
+    }
+  }
+};
+
+renderHeader(pointsTrip);
+renderBoard(pointsTrip);

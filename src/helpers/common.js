@@ -8,6 +8,12 @@ const messages = {
   'Future': 'There are no future events now',
 };
 
+const getFilter = {
+  everything: (point) => point === point,
+  future: (point) => point.dateStart >= dayjs(),
+  past: (point) => (point.dateStart < dayjs()) || (point.dateStart > dayjs() > point.dateEnd),
+};
+
 const calculateDuration = (start, end) => {
   const differenceInMinutes = (dayjs(end)).diff(dayjs(start), 'minutes');
   const hours = Math.floor(differenceInMinutes / 60);
@@ -55,4 +61,4 @@ const getTripCost = (points) => (
 
 const showMessage = (filterState) => messages[filterState];
 
-export { calculateDuration, showPointDataHelper, getTravelTime, getTripRoute, getTripCost, showMessage };
+export { getFilter, calculateDuration, showPointDataHelper, getTravelTime, getTripRoute, getTripCost, showMessage };

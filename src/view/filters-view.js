@@ -1,4 +1,4 @@
-import { createElement } from '../helpers/helpers.js';
+import AbstractView from './abstract-view.js';
 
 const createFilterTemplate = () => (
   `<form class="trip-filters" action="#" method="get">
@@ -21,25 +21,15 @@ const createFilterTemplate = () => (
   </form>`
 );
 
-export default class Filter {
+export default class FilterView extends AbstractView {
+  #points = null;
+
   constructor(points) {
-    this._element = null;
-    this._points = points;
+    super();
+    this.#points = points;
   }
 
-  getTemplate() {
-    return createFilterTemplate(this._points);
-  }
-
-  getElement() {
-    if (!this._element) {
-      this._element = createElement(this.getTemplate());
-    }
-
-    return this._element;
-  }
-
-  removeElement() {
-    this._element = null;
+  get template() {
+    return createFilterTemplate(this.#points);
   }
 }

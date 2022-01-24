@@ -1,5 +1,5 @@
 import { showMessage } from '../helpers/common.js';
-import { createElement } from '../helpers/helpers.js';
+import AbstractView from './abstract-view.js';
 
 const createMessageTemplate = () => (
   `<p class="trip-events__msg">
@@ -7,24 +7,8 @@ const createMessageTemplate = () => (
   </p>`
 );
 
-export default class Message {
-  constructor() {
-    this._element = null;
-  }
-
-  getTemplate() {
+export default class MessageView extends AbstractView {
+  get template() {
     return createMessageTemplate();
-  }
-
-  getElement() {
-    if (!this._element) {
-      this._element = createElement(this.getTemplate());
-    }
-
-    return this._element;
-  }
-
-  removeElement() {
-    this._element = null;
   }
 }

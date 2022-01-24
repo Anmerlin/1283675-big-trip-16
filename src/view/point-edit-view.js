@@ -1,6 +1,6 @@
 import dayjs from 'dayjs';
 import { allOffers, getAvailableOffers } from '../mock/point.js';
-import { createElement } from '../helpers/helpers.js';
+import AbstractView from './abstract-view.js';
 
 const showOffers = (availableOffers, selectedOffers) =>
   `<section class="event__section  event__section--offers">
@@ -142,26 +142,36 @@ const createPointTemplate = (point = {}, isEditing = false) => {
   </li>`;
 };
 
-export default class PointCreate {
-  constructor(point = {}, isEditing = false) {
-    this._element = null;
+export default class PointEditView extends AbstractView {
+  _point = {};
+  _isEditing = false;
+
+  constructor(point, isEditing) {
+    super();
     this._point = point;
-    this._isEdited = isEditing;
+    this._isEditing = isEditing;
   }
 
-  getTemplate() {
+  get template() {
     return createPointTemplate(this._point, this._isEditing);
   }
 
-  getElement() {
-    if (!this._element) {
-      this._element = createElement(this.getTemplate());
-    }
+  // setEditButtonClickHandler = (callback) => {
+  //   this._callback.editButtonClick = callback;
+  //   this.element.querySelector('.event__rollup-btn').addEventListener('click', this.#editButtonClickHandler);
+  // }
 
-    return this._element;
+  setFormSubmitHandler = (callback) => {
+    this._callback.formSubmit = callback;
+    this.element.querySelector('form').addEventListener('submit', this.#formSubmitHandler);
   }
 
-  removeElement() {
-    this._element = null;
+  // #editButtonClickHandler = () => {
+  //   this._callback.editButtonClick();
+  // }
+
+  #formSubmitHandler = (evt) => {
+    evt.preventDefault();
+    this._callback.formSubmit();
   }
 }
