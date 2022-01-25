@@ -1,4 +1,5 @@
 import dayjs from 'dayjs';
+import {nanoid} from 'nanoid';
 import { getBoolean, getRandomIntegerRangeInclusive, getArrayRandomLengthFromValues, getRandomValueFromArray } from '../helpers/helpers.js';
 
 const TYPE_POINTS = [
@@ -135,7 +136,7 @@ const generatePoints = () => {
   const [type, destination, dateStart, dateEnd, basePrice, offers, isFavorite] = pointsDataHelper();
 
   return {
-    id: 0,
+    id: nanoid(),
     type,
     destination,
     dateStart,

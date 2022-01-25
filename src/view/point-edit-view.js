@@ -143,17 +143,17 @@ const createPointTemplate = (point = {}, isEditing = false) => {
 };
 
 export default class PointEditView extends AbstractView {
-  _point = {};
-  _isEditing = false;
+  #point = {};
+  #isEditing = false;
 
   constructor(point, isEditing) {
     super();
-    this._point = point;
-    this._isEditing = isEditing;
+    this.#point = point;
+    this.#isEditing = isEditing;
   }
 
   get template() {
-    return createPointTemplate(this._point, this._isEditing);
+    return createPointTemplate(this.#point, this.#isEditing);
   }
 
   // setEditButtonClickHandler = (callback) => {
@@ -172,6 +172,6 @@ export default class PointEditView extends AbstractView {
 
   #formSubmitHandler = (evt) => {
     evt.preventDefault();
-    this._callback.formSubmit();
+    this._callback.formSubmit(this.#point);
   }
 }

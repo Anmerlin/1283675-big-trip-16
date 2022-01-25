@@ -59,6 +59,20 @@ const getTripCost = (points) => (
   ), 0)
 );
 
+const updatePoint = (points, update) => {
+  const index = points.findIndex((point) => point.id === update.id);
+
+  if (index === -1) {
+    return points;
+  }
+
+  return [
+    ...points.slice(0, index),
+    update,
+    ...points.slice(index + 1),
+  ];
+};
+
 const showMessage = (filterState) => messages[filterState];
 
-export { getFilter, calculateDuration, showPointDataHelper, getTravelTime, getTripRoute, getTripCost, showMessage };
+export { getFilter, calculateDuration, showPointDataHelper, getTravelTime, getTripRoute, getTripCost, updatePoint, showMessage };
