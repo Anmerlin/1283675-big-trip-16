@@ -1,6 +1,6 @@
 import dayjs from 'dayjs';
 import { DESTINATIONS_COUNT } from '../helpers/consts.js';
-import { showTwoDigits } from '../helpers/helpers.js';
+import { showTwoDigits, sortByKey } from '../helpers/helpers.js';
 
 const messages = {
   'Everything': 'Click New Event to create your first point',
@@ -14,8 +14,10 @@ const getFilter = {
   past: (point) => (point.dateStart < dayjs()) || (point.dateStart > dayjs() > point.dateEnd),
 };
 
-const calculateDuration = (start, end) => {
-  const differenceInMinutes = (dayjs(end)).diff(dayjs(start), 'minutes');
+const getPointTimeDuration = (point) => (dayjs(point.dateEnd)).diff(dayjs(point.dateStart), 'minutes');
+
+const calculateDuration = (point) => {
+  const differenceInMinutes = getPointTimeDuration(point);
   const hours = Math.floor(differenceInMinutes / 60);
   const minutes = differenceInMinutes - (hours * 60);
   const days = Math.floor(hours / 24);
@@ -73,6 +75,12 @@ const updatePoint = (points, update) => {
   ];
 };
 
+//const sortByDay = sortByKey('dateStart', true);
+
+const sortByTime = (pointA, pointB) => getPointTimeDuration(pointB) - getPointTimeDuration(pointA);
+
+const sortByPrice = sortByKey('basePrice');
+
 const showMessage = (filterState) => messages[filterState];
 
-export { getFilter, calculateDuration, showPointDataHelper, getTravelTime, getTripRoute, getTripCost, updatePoint, showMessage };
+export { getFilter, calculateDuration, showPointDataHelper, getTravelTime, getTripRoute, getTripCost, updatePoint, sortByTime, sortByPrice, showMessage };

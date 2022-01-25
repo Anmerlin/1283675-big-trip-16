@@ -16,7 +16,7 @@ const tripMainElement = headerElement.querySelector('.trip-main');
 const tripFilterElement = headerElement.querySelector('.trip-controls__filters');
 const tripEventsElement = mainElement.querySelector('.trip-events');
 
-const pointsTrip = new Array(POINT_COUNT).fill().map(generatePoints).sort(sortByKey('dateStart'));
+const pointsTrip = new Array(POINT_COUNT).fill().map(generatePoints).sort(sortByKey('dateStart', true));
 
 const renderSummaryInfo = (points) => {
   const filterComponent = new FilterView(points);

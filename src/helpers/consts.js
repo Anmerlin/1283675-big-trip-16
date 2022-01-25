@@ -9,4 +9,10 @@ const RenderingLocation = {
   AFTER_END: 'afterend'
 };
 
-export { POINT_COUNT, DESTINATIONS_COUNT, RenderingLocation };
+const SortType = {
+  DEFAULT: 'day',
+  TIME: 'time',
+  PRICE: 'price',
+};
+
+export { POINT_COUNT, DESTINATIONS_COUNT, RenderingLocation, SortType };

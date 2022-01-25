@@ -26,7 +26,7 @@ const showTwoDigits = (number) => (
   number.toString().padStart(2, '0')
 );
 
-const sortByKey = (key) => (a, b) => a[key] > b[key] ? 1 : -1;
+const sortByKey = (key, order) => (a, b) => order ? a[key] - b[key] : b[key] - a[key];
 
 const getBoolean = () => Boolean(getRandomIntegerRangeInclusive(0, 1));
 
