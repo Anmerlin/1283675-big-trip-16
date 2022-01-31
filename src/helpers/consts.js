@@ -9,10 +9,21 @@ const RenderingLocation = {
   AFTER_END: 'afterend'
 };
 
+const Mode = {
+  DEFAULT: 'DEFAULT',
+  EDITING: 'EDITING',
+};
+
 const SortType = {
   DEFAULT: 'day',
   TIME: 'time',
   PRICE: 'price',
 };
 
-export { POINT_COUNT, DESTINATIONS_COUNT, RenderingLocation, SortType };
+const FilterType = {
+  DEFAULT: 'everything',
+  FUTURE: 'future',
+  PAST: 'past',
+};
+
+export { POINT_COUNT, DESTINATIONS_COUNT, RenderingLocation, Mode, SortType, FilterType };

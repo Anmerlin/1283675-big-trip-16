@@ -32,4 +32,6 @@ const getBoolean = () => Boolean(getRandomIntegerRangeInclusive(0, 1));
 
 const isEscEvent = (evt) => evt.key === 'Escape' || evt.key === 'Esc';
 
-export { showTwoDigits, sortByKey, getBoolean, getRandomIntegerRangeInclusive, getArrayRandomLengthFromValues, getRandomValueFromArray, isEscEvent };
+const setCapitalizeText = (string) => string && string[0].toUpperCase() + string.slice(1);
+
+export { showTwoDigits, sortByKey, getBoolean, getRandomIntegerRangeInclusive, getArrayRandomLengthFromValues, getRandomValueFromArray, isEscEvent, setCapitalizeText };

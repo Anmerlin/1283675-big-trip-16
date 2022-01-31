@@ -1,13 +1,8 @@
-// import { POINT_COUNT, RenderingLocation } from '../helpers/consts.js';
+import { Mode } from '../helpers/consts.js';
 import { isEscEvent } from '../helpers/helpers.js';
 import { render, replace, remove } from '../helpers/render.js';
 import PointView from '../view/point-view.js';
 import PointEditView from '../view/point-edit-view.js';
-
-const Mode = {
-  DEFAULT: 'DEFAULT',
-  EDITING: 'EDITING',
-};
 
 export default class PointPresenter {
   #pointListContainer = null;

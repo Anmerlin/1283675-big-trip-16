@@ -8,11 +8,11 @@ const messages = {
   'Future': 'There are no future events now',
 };
 
-const getFilter = {
+/* const getFilter = {
   everything: (point) => point === point,
   future: (point) => point.dateStart >= dayjs(),
   past: (point) => (point.dateStart < dayjs()) || (point.dateStart > dayjs() > point.dateEnd),
-};
+}; */
 
 const getPointTimeDuration = (point) => (dayjs(point.dateEnd)).diff(dayjs(point.dateStart), 'minutes');
 
@@ -81,6 +81,12 @@ const sortByTime = (pointA, pointB) => getPointTimeDuration(pointB) - getPointTi
 
 const sortByPrice = sortByKey('basePrice');
 
+// const filterOutEverything = (point) => point === point;
+
+const filterOutFuture = (point) => point.dateStart >= dayjs();
+
+const fiterOutPast = (point) => (point.dateStart < dayjs()) || (point.dateStart > dayjs() > point.dateEnd);
+
 const showMessage = (filterState) => messages[filterState];
 
-export { getFilter, calculateDuration, showPointDataHelper, getTravelTime, getTripRoute, getTripCost, updatePoint, sortByTime, sortByPrice, showMessage };
+export { calculateDuration, showPointDataHelper, getTravelTime, getTripRoute, getTripCost, updatePoint, sortByTime, sortByPrice, filterOutFuture, fiterOutPast, showMessage };

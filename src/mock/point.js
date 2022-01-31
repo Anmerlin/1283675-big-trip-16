@@ -1,6 +1,8 @@
 import dayjs from 'dayjs';
 import {nanoid} from 'nanoid';
 import { getBoolean, getRandomIntegerRangeInclusive, getArrayRandomLengthFromValues, getRandomValueFromArray } from '../helpers/helpers.js';
+import { dataOffers as ALL_OFFERS} from './offers.js';
+import { dataDestinations } from './destinations.js';
 
 const TYPE_POINTS = [
   'Taxi',
@@ -14,13 +16,13 @@ const TYPE_POINTS = [
   'Restaurant',
 ];
 
-const DESTINATION_POINTS = [
-  'Amsterdam',
-  'Chamonix',
-  'Geneva',
-  'Barselona',
-  'Berlin'
-];
+// const DESTINATION_POINTS = [
+//   'Amsterdam',
+//   'Chamonix',
+//   'Geneva',
+//   'Barselona',
+//   'Berlin'
+// ];
 
 const DESCRIPTION_POINTS = [
   'Lorem ipsum dolor sit amet, consectetur adipiscing elit.',
@@ -36,18 +38,34 @@ const DESCRIPTION_POINTS = [
   'In rutrum ac purus sit amet tempus.'
 ];
 
-const OFFERS_TITLES = [
-  'Add luggage',
-  'Switch to comfort',
-  'Add meal',
-  'Choose seats',
-  'Travel by train',
-  'Order Uber',
-  'Rent a car',
-  'Add breakfast',
-  'Book tickets',
-  'Lunch in city',
-];
+// const OFFERS_TITLES = [
+//   'Add luggage',
+//   'Switch to comfort',
+//   'Add meal',
+//   'Choose seats',
+//   'Travel by train',
+//   'Order Uber',
+//   'Rent a car',
+//   'Add breakfast',
+//   'Book tickets',
+//   'Lunch in city',
+// ];
+
+const offerTitles = [...new Set(
+  ALL_OFFERS
+    .reduce(
+      (prev, current) =>
+        [...prev,
+          ...current.offers
+            .map(
+              (offer) => offer.title,
+            ),
+        ],
+      [],
+    ),
+)];
+
+const pointCities = dataDestinations.map((destination) => destination.name);
 
 const BASE_PRICE_MIN = 0;
 const BASE_PRICE_MAX = 600;
@@ -64,7 +82,7 @@ const INTERVAL_MINUTES_MAX = 30;
 
 
 const generateDestination = () => {
-  const name = getRandomValueFromArray(DESTINATION_POINTS);
+  const name = getRandomValueFromArray(pointCities);
   const description = getArrayRandomLengthFromValues(DESCRIPTION_POINTS, getRandomIntegerRangeInclusive(COUNT_SENTENCE_MIN, COUNT_SENTENCE_MAX)).join(' ');
   const pictures = new Array(getRandomIntegerRangeInclusive(1,5)).fill().map(
     () => (
@@ -101,7 +119,7 @@ const generateOffers = () => TYPE_POINTS.map(
       'offers': new Array(getRandomIntegerRangeInclusive(0, 5)).fill().map(
         () => (
           {
-            'title': OFFERS_TITLES[getRandomIntegerRangeInclusive(0, OFFERS_TITLES.length - 1)],
+            'title': offerTitles[getRandomIntegerRangeInclusive(0, offerTitles.length - 1)],
             'price': getRandomIntegerRangeInclusive(OFFER_PRICE_MIN, OFFER_PRICE_MAX),
           }
         )
@@ -110,9 +128,11 @@ const generateOffers = () => TYPE_POINTS.map(
   )
 );
 
-const allOffers = generateOffers();
+// const allOffers = generateOffers();
+// const allOffers = mockOffers;
 
-const getAvailableOffers = (type, offers) => (offers.find((offer) => offer.type === type)).offers;
+// const getAvailableOffers = (type, offers) => (offers.find((offer) => offer.type === type)).offers;
+const getAvailableOffers = (type, offers) => (offers.find((offer) => offer.type.toLowerCase() === type.toLowerCase())).offers;
 
 const getSelectedOffers = (type, offers) => {
   const availableOffers = getAvailableOffers(type, offers);
@@ -127,7 +147,7 @@ const pointsDataHelper = () => {
   const dateEnd = Math.max(...dates);
   const basePrice = getRandomIntegerRangeInclusive(BASE_PRICE_MIN, BASE_PRICE_MAX);
   const destination = generateDestination();
-  const offers = getSelectedOffers(type, allOffers);
+  const offers = getSelectedOffers(type, ALL_OFFERS);
 
   return [type, destination, dateStart, dateEnd, basePrice, offers, isFavorite];
 };
@@ -147,4 +167,4 @@ const generatePoints = () => {
   };
 };
 
-export { generatePoints, allOffers, getAvailableOffers };
+export { generatePoints, getAvailableOffers };
