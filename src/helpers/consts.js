@@ -9,6 +9,11 @@ const RenderingLocation = {
   AFTER_END: 'afterend'
 };
 
+const FormState = {
+  DEFAULT: 'EDIT',
+  ADD: 'ADD',
+};
+
 const Mode = {
   DEFAULT: 'DEFAULT',
   EDITING: 'EDITING',
@@ -26,4 +31,4 @@ const FilterType = {
   PAST: 'past',
 };
 
-export { POINT_COUNT, DESTINATIONS_COUNT, RenderingLocation, Mode, SortType, FilterType };
+export { POINT_COUNT, DESTINATIONS_COUNT, RenderingLocation, FormState, Mode, SortType, FilterType };

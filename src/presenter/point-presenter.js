@@ -1,4 +1,4 @@
-import { Mode } from '../helpers/consts.js';
+import { Mode, FormState } from '../helpers/consts.js';
 import { isEscEvent } from '../helpers/helpers.js';
 import { render, replace, remove } from '../helpers/render.js';
 import PointView from '../view/point-view.js';
@@ -14,6 +14,7 @@ export default class PointPresenter {
 
   #point = null;
   #mode = Mode.DEFAULT;
+  #formState = FormState.DEFAULT;
 
   constructor(pointListContainer, changeData, changeMode) {
     this.#pointListContainer = pointListContainer;
@@ -28,7 +29,7 @@ export default class PointPresenter {
     const prevPointEditComponent = this.#pointEditComponent;
 
     this.#pointComponent = new PointView(point);
-    this.#pointEditComponent = new PointEditView(point, true);
+    this.#pointEditComponent = new PointEditView(point, this.#formState);
 
     this.#pointComponent.setFavoriteButtonClickHandler(this.#handleFavoriteButtonClick);
     this.#pointComponent.setEditButtonClickHandler(this.#handleEditButtonClick);

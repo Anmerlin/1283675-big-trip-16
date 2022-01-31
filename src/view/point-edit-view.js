@@ -1,9 +1,12 @@
 import dayjs from 'dayjs';
+import flatpickr from 'flatpickr';
 import { getAvailableOffers } from '../mock/point.js';
 import { dataOffers as ALL_OFFERS } from '../mock/offers.js';
 import { dataDestinations as ALL_DESTINATIONS} from '../mock/destinations.js';
 import { setCapitalizeText } from '../helpers/helpers.js';
+import { FormState } from '../helpers/consts.js';
 import SmartView from './smart-view.js';
+import '../../node_modules/flatpickr/dist/flatpickr.min.css';
 
 const showOffers = (availableOffers, selectedOffers) =>
   `<section class="event__section  event__section--offers">
@@ -52,7 +55,7 @@ const generateDestinationlist = () => `${ALL_DESTINATIONS
 
 const getDestination = (name, destinations) => (destinations.find((destination) => destination.name === name));
 
-const createPointTemplate = (point = {}, isEditing = false) => {
+const createPointTemplate = (point = {}, state) => {
   const { pointType = 'Flight', destination = {}, dateStart = dayjs(), dateEnd = dayjs(), basePrice = '', offers = [] } = point;
   const allPointOffers = getAvailableOffers(pointType, ALL_OFFERS);
   const destinationInfo = getDestination(destination.name, ALL_DESTINATIONS);
@@ -102,8 +105,8 @@ const createPointTemplate = (point = {}, isEditing = false) => {
         </div>
 
         <button class="event__save-btn  btn  btn--blue" type="submit">Save</button>
-        <button class="event__reset-btn" type="reset">${(isEditing) ? 'Delete' : 'Cancel'}</button>
-        ${(isEditing) ? `<button class="event__rollup-btn" type="button">
+        <button class="event__reset-btn" type="reset">${(state === FormState.DEFAULT) ? 'Delete' : 'Cancel'}</button>
+        ${(state === FormState.DEFAULT) ? `<button class="event__rollup-btn" type="button">
           <span class="visually-hidden">Open event</span>
         </button>` : ''}
       </header>
@@ -119,23 +122,28 @@ const createPointTemplate = (point = {}, isEditing = false) => {
 
 export default class PointEditView extends SmartView {
   #point = {};
-  #isEditing = false;
+  #state = null;
+  #startDatepicker = null;
+  #endDatepicker = null;
 
-  constructor(point, isEditing) {
+  constructor(point, state) {
     super();
     this.#point = point;
-    this.#isEditing = isEditing;
+    this.#state = state;
     this._data = PointEditView.parsePointToData(point);
 
     this.#setInnerHandlers();
+    this.#setStartDatepicker();
   }
 
   get template() {
-    return createPointTemplate(this._data, this.#isEditing);
+    return createPointTemplate(this._data, this.#state);
   }
 
   restoreHandlers = () => {
     this.#setInnerHandlers();
+    this.#setStartDatepicker();
+    this.#setEndDatepicker();
     this.setFormSubmitHandler(this._callback.formSubmit);
   }
 
@@ -167,22 +175,63 @@ export default class PointEditView extends SmartView {
   );
 
   #destinationChangeHandler = (evt) => {
-    const {name, description, picture} = getDestination(evt.target.value, ALL_DESTINATIONS);
-    this.updateData(
-      {
-        destination: {
-          name,
-          description,
-          picture,
-        },
-      },
-    );
+    const destination = getDestination(evt.target.value, ALL_DESTINATIONS);
+    this.updateData({
+      destination,
+    });
   }
 
   #pointTypeChangeHandler = (evt) => {
     evt.preventDefault();
     this.updateData({
       pointType: evt.target.value,
+    });
+  }
+
+  #setStartDatepicker = () => {
+    if (this.#startDatepicker) {
+      this.#startDatepicker.destroy();
+      this.#startDatepicker = null;
+    }
+
+    this.#startDatepicker = flatpickr(
+      this.element.querySelector('#event-start-time-1'),
+      {
+        enableTime: true,
+        dateFormat: 'd/m/y H:i',
+        defaultDate: this._data.dateStart,
+        onChange: this.#pointDateStartChangeHandler,
+      },
+    );
+  }
+
+  #setEndDatepicker = () => {
+    if (this.#endDatepicker) {
+      this.#endDatepicker.destroy();
+      this.#endDatepicker = null;
+    }
+
+    this.#endDatepicker = flatpickr(
+      this.element.querySelector('#event-end-time-1'),
+      {
+        enableTime: true,
+        dateFormat: 'd/m/y H:i',
+        defaultDate: this._data.dateEnd,
+        onChange: this.#pointDateEndChangeHandler,
+        minDate: this._data.dateStart,
+      },
+    );
+  }
+
+  #pointDateStartChangeHandler = ([userDate]) => {
+    this.updateData({
+      dateStart: userDate,
+    });
+  }
+
+  #pointDateEndChangeHandler = ([userDate]) => {
+    this.updateData({
+      dateEnd: userDate,
     });
   }
 
