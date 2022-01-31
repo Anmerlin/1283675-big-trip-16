@@ -1,3 +1,5 @@
+import dayjs from 'dayjs';
+
 const POINT_COUNT = 20;
 
 const DESTINATIONS_COUNT = 3;
@@ -31,4 +33,30 @@ const FilterType = {
   PAST: 'past',
 };
 
-export { POINT_COUNT, DESTINATIONS_COUNT, RenderingLocation, FormState, Mode, SortType, FilterType };
+const UserAction = {
+  UPDATE_POINT: 'UPDATE_POINT',
+  ADD_POINT: 'ADD_POINT',
+  DELETE_POINT: 'DELETE_POINT',
+};
+
+const UpdateType = {
+  PATCH: 'PATCH',
+  MINOR: 'MINOR',
+  MAJOR: 'MAJOR',
+};
+
+const NEW_POINT = {
+  'type': '',
+  'dateStart': dayjs(),
+  'dateEnd': dayjs(),
+  'destination': {
+    'name': '',
+    'description': '',
+    'pictures': [],
+  },
+  'basePrice': '',
+  'isFavorite': false,
+  'offers': [],
+};
+
+export { POINT_COUNT, DESTINATIONS_COUNT, NEW_POINT, RenderingLocation, FormState, Mode, SortType, FilterType, UserAction, UpdateType };

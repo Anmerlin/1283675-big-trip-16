@@ -1,18 +1,18 @@
 import dayjs from 'dayjs';
-import { DESTINATIONS_COUNT } from '../helpers/consts.js';
+import { DESTINATIONS_COUNT, FilterType } from '../helpers/consts.js';
 import { showTwoDigits, sortByKey } from '../helpers/helpers.js';
 
-const messages = {
-  'Everything': 'Click New Event to create your first point',
-  'Past': 'There are no past events now',
-  'Future': 'There are no future events now',
+const Messages = {
+  [FilterType.DEFAULT]: 'Click New Event to create your first point',
+  [FilterType.PAST]: 'There are no past events now',
+  [FilterType.FUTURE]: 'There are no future events now',
 };
 
-/* const getFilter = {
-  everything: (point) => point === point,
-  future: (point) => point.dateStart >= dayjs(),
-  past: (point) => (point.dateStart < dayjs()) || (point.dateStart > dayjs() > point.dateEnd),
-}; */
+const filter = {
+  [FilterType.DEFAULT]: (points) => points.filter((point) => point === point),
+  [FilterType.FUTURE]: (points) => points.filter((point) => point.dateStart >= dayjs() || point.dateStart < dayjs() & dayjs() < point.dateEnd),
+  [FilterType.PAST]: (points) => points.filter((point) => (point.dateStart < dayjs()) || point.dateStart < dayjs() & dayjs() < point.dateEnd),
+};
 
 const getPointTimeDuration = (point) => (dayjs(point.dateEnd)).diff(dayjs(point.dateStart), 'minutes');
 
@@ -61,21 +61,9 @@ const getTripCost = (points) => (
   ), 0)
 );
 
-const updatePoint = (points, update) => {
-  const index = points.findIndex((point) => point.id === update.id);
-
-  if (index === -1) {
-    return points;
-  }
-
-  return [
-    ...points.slice(0, index),
-    update,
-    ...points.slice(index + 1),
-  ];
-};
-
 //const sortByDay = sortByKey('dateStart', true);
+
+const isDatesEqual = (dateA, dateB) => (dateA === null && dateB === null) || dayjs(dateA).isSame(dateB);
 
 const sortByTime = (pointA, pointB) => getPointTimeDuration(pointB) - getPointTimeDuration(pointA);
 
@@ -87,6 +75,4 @@ const filterOutFuture = (point) => point.dateStart >= dayjs();
 
 const fiterOutPast = (point) => (point.dateStart < dayjs()) || (point.dateStart > dayjs() > point.dateEnd);
 
-const showMessage = (filterState) => messages[filterState];
-
-export { calculateDuration, showPointDataHelper, getTravelTime, getTripRoute, getTripCost, updatePoint, sortByTime, sortByPrice, filterOutFuture, fiterOutPast, showMessage };
+export { calculateDuration, showPointDataHelper, getTravelTime, getTripRoute, getTripCost, isDatesEqual, sortByTime, sortByPrice, filterOutFuture, fiterOutPast, Messages, filter};
