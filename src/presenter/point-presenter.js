@@ -33,10 +33,11 @@ export default class PointPresenter {
     this.#pointEditComponent = new PointEditView(point, this.#formState);
 
     this.#pointComponent.setFavoriteButtonClickHandler(this.#handleFavoriteButtonClick);
-    this.#pointComponent.setEditButtonClickHandler(this.#handleEditButtonClick);
+    this.#pointComponent.setButtonEditClickHandler(this.#handleButtonEditClick);
     this.#pointEditComponent.setFormSubmitHandler(this.#handleFormSubmit);
     this.#pointEditComponent.setButtonDeleteClickHandler(this.#handleButtonDeleteClick);
-    // this.#pointEditComponent.setEditButtonClickHandler(this.#handleButtonEditClick);
+    this.#pointEditComponent.setButtonEditClickHandler(this.#handleButtonPointClick);
+    this.#pointEditComponent.setPriceChangeHandler();
 
     if (prevPointComponent === null || prevPointEditComponent === null) {
       render(this.#pointListContainer, this.#pointComponent);
@@ -85,17 +86,17 @@ export default class PointPresenter {
     if (isEscEvent(evt)) {
       evt.preventDefault();
       this.#replaceEditFormToPoint();
-      // document.removeEventListener('keydown', this._escKeyDownHandler);
+      document.removeEventListener('keydown', this.#escKeyDownHandler);
     }
   }
 
-  #handleEditButtonClick = () => {
+  #handleButtonEditClick = () => {
     this.#replacePointToEditForm();
   }
 
-  // #handleButtonEditClick = () => {
-  //   this.#replaceEditFormToPoint();
-  // }
+  #handleButtonPointClick = () => {
+    this.#replaceEditFormToPoint();
+  }
 
   #handleFormSubmit = (update) => {
     const isMinorUpdate =
@@ -123,6 +124,7 @@ export default class PointPresenter {
     this.#changeData(
       UserAction.UPDATE_POINT,
       UpdateType.MINOR,
-      {...this.#point, isFavorite: !this.#point.isFavorite});
+      {...this.#point, isFavorite: !this.#point.isFavorite},
+    );
   }
 }

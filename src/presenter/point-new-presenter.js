@@ -8,6 +8,7 @@ export default class PointNewPresenter {
   #pointListContainer = null;
   #changeData = null;
   #pointEditComponent = null;
+  #destroyCallback = null;
 
   #point = NEW_POINT;
   #formState = FormState.ADD;
@@ -17,7 +18,9 @@ export default class PointNewPresenter {
     this.#changeData = changeData;
   }
 
-  init = () => {
+  init = (callback) => {
+    this.#destroyCallback = callback;
+
     if (this.#pointEditComponent !== null) {
       return;
     }
@@ -26,7 +29,7 @@ export default class PointNewPresenter {
     this.#pointEditComponent.setRangeDatepicker();
     this.#pointEditComponent.setPriceChangeHandler();
     this.#pointEditComponent.setFormSubmitHandler(this.#handleFormSubmit);
-    this.#pointEditComponent.setButtonDeleteClickHandler(this.#handleButtonDeleteClick);
+    this.#pointEditComponent.setButtonDeleteClickHandler(this.#handleButtonCancelClick);
 
     render(this.#pointListContainer, this.#pointEditComponent, RenderingLocation.AFTER_BEGIN);
 
@@ -42,6 +45,10 @@ export default class PointNewPresenter {
     this.#pointEditComponent.removeRangeDatepicker();
     this.#pointEditComponent = null;
 
+    if(this.#destroyCallback !== null) {
+      this.#destroyCallback();
+    }
+
     document.removeEventListener('keydown', this.#escKeyDownHandler);
   }
 
@@ -54,7 +61,7 @@ export default class PointNewPresenter {
     this.destroy();
   }
 
-  #handleButtonDeleteClick = () => {
+  #handleButtonCancelClick = () => {
     this.destroy();
   }
 
@@ -62,7 +69,7 @@ export default class PointNewPresenter {
     if (isEscEvent(evt)) {
       evt.preventDefault();
       this.destroy();
-      // document.removeEventListener('keydown', this._escKeyDownHandler);
+      document.removeEventListener('keydown', this.#escKeyDownHandler);
     }
   }
 }

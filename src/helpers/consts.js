@@ -45,6 +45,11 @@ const UpdateType = {
   MAJOR: 'MAJOR',
 };
 
+const NavigationItem = {
+  TABLE: 'Table',
+  STATS: 'Stats',
+};
+
 const NEW_POINT = {
   'type': '',
   'dateStart': dayjs(),
@@ -59,4 +64,4 @@ const NEW_POINT = {
   'offers': [],
 };
 
-export { POINT_COUNT, DESTINATIONS_COUNT, NEW_POINT, RenderingLocation, FormState, Mode, SortType, FilterType, UserAction, UpdateType };
+export { POINT_COUNT, DESTINATIONS_COUNT, NEW_POINT, RenderingLocation, FormState, Mode, SortType, FilterType, UserAction, UpdateType, NavigationItem };

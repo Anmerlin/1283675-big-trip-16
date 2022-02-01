@@ -7,8 +7,7 @@ const createTripInfoTemplate = (points) => (points.length !== 0) ? `<section cla
       <p class="trip-info__dates">${getTravelTime(points)}</p>
     </div>
     <p class="trip-info__cost">
-      Total: &euro;&nbsp;
-      ${getTripCost(points)}
+      Total: &euro;&nbsp; <span class="trip-info__cost-value">${getTripCost(points)}</span>
     </p>
   </section>` : '';
 export default class TripInfoView extends AbstractView {

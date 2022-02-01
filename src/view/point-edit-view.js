@@ -123,13 +123,13 @@ const createPointTemplate = (point, state) => {
 };
 
 export default class PointEditView extends SmartView {
-  #point = {};
+  // #point = {};
   #state = null;
   #rangeDatepicker = null;
 
   constructor(point, state) {
     super();
-    this.#point = point;
+    // this.#point = point;
     this.#state = state;
     this._data = PointEditView.parsePointToData(point);
 
@@ -158,39 +158,35 @@ export default class PointEditView extends SmartView {
     this.setRangeDatepicker();
     this.setPriceChangeHandler();
     this.setFormSubmitHandler(this._callback.formSubmit);
-    // if(this.element.querySelector('event__rollup-btn')) {
-    //   this.setButtonClickHandler(this._callback.buttonClick);
-    // }
+    if(this.element.querySelector('event__rollup-btn')) {
+      this.setButtonEditClickHandler(this._callback.buttonEditClick);
+    }
     this.setButtonDeleteClickHandler(this._callback.buttonDeleteClick);
   }
 
-  // setEditButtonClickHandler = (callback) => {
-  //   this._callback.editButtonClick = callback;
-  //   this.element.querySelector('.event__rollup-btn').addEventListener('click', this.#editButtonClickHandler);
-  // }
+  setButtonEditClickHandler = (callback) => {
+    this._callback.buttonEditClick = callback;
+    this.element.querySelector('.event__rollup-btn').addEventListener('click', this.#buttonEditClickHandler);
+  }
+
+  setButtonDeleteClickHandler = (callback) => {
+    this._callback.buttonDeleteClick = callback;
+    this.element.querySelector('.event__reset-btn').addEventListener('click', this.#formDeleteClickHandler);
+  }
 
   setFormSubmitHandler = (callback) => {
     this._callback.formSubmit = callback;
     this.element.querySelector('form').addEventListener('submit', this.#formSubmitHandler);
   }
 
-  // #editButtonClickHandler = () => {
-  //   this._callback.editButtonClick();
-  // }
+  #buttonEditClickHandler = (evt) => {
+    evt.preventDefault();
+    this._callback.buttonEditClick();
+  }
 
   #formSubmitHandler = (evt) => {
     evt.preventDefault();
     this._callback.formSubmit(PointEditView.parseDataToPoint(this._data));
-  }
-
-  #buttonClickHandler = (evt) => {
-    evt.preventDefault();
-    this._callback.buttonClick();
-  }
-
-  setButtonDeleteClickHandler = (callback) => {
-    this._callback.buttonDeleteClick = callback;
-    this.element.querySelector('.event__reset-btn').addEventListener('click', this.#formDeleteClickHandler);
   }
 
   #formDeleteClickHandler = (evt) => {
@@ -233,18 +229,6 @@ export default class PointEditView extends SmartView {
     }
   }
 
-  // #pointDateStartChangeHandler = ([userDate]) => {
-  //   this.updateData({
-  //     dateStart: userDate,
-  //   });
-  // }
-
-  // #pointDateEndChangeHandler = ([userDate]) => {
-  //   this.updateData({
-  //     dateEnd: userDate,
-  //   });
-  // }
-
   #pointDateRangeChangeHandler = ([userDateStart, userDateEnd]) => {
     this.updateData({
       dateStart: userDateStart,
@@ -256,10 +240,10 @@ export default class PointEditView extends SmartView {
 
   setPriceChangeHandler = (callback) => {
     this._callback.priceChange = callback;
-    this.element.querySelector('.event__input--price').addEventListener('input', this.#priceChangeHandler);
+    this.element.querySelector('.event__input--price').addEventListener('input', this.#pointChangeHandler);
   }
 
-  #priceChangeHandler = (evt) => {
+  #pointChangeHandler = (evt) => {
     this.updateData({
       basePrice: evt.target.value,
     }, true);

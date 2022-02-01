@@ -18,11 +18,19 @@ const getPointTimeDuration = (point) => (dayjs(point.dateEnd)).diff(dayjs(point.
 
 const calculateDuration = (point) => {
   const differenceInMinutes = getPointTimeDuration(point);
-  const hours = Math.floor(differenceInMinutes / 60);
-  const minutes = differenceInMinutes - (hours * 60);
-  const days = Math.floor(hours / 24);
+  const days = Math.floor(differenceInMinutes / 3600);
+  const hours = Math.floor((differenceInMinutes - (days * 3600)) / 60);
+  const minutes = differenceInMinutes - (days * 3600) - (hours * 60);
 
   return `${(days !== 0) ? `${showTwoDigits(days)}D` : ''} ${(hours !== 0) ? `${showTwoDigits(hours)}H` : ''} ${showTwoDigits(minutes)}M`;
+};
+
+const formatDuration = (time) => {
+  const days = Math.floor(time / 3600);
+  const hours = Math.floor((time - (days * 3600)) / 60);
+  const minutes = time - (days * 3600) - (hours * 60);
+
+  return `${(days !== 0) ? `${days}D` : ''} ${(hours !== 0) ? `${hours}H` : ''} ${minutes}M`;
 };
 
 const showPointDataHelper = (dateStart, dateEnd) => {
@@ -61,6 +69,19 @@ const getTripCost = (points) => (
   ), 0)
 );
 
+const hidePseudoElement = () => {
+  const styleSheet = document.createElement('style');
+  styleSheet.id = 'no-pseudo';
+  styleSheet.innerHTML = '*:after {content: none !important; display: none !important;}';
+  document.body.appendChild (styleSheet);
+};
+
+const showPseudoElement = () => {
+  const sheetToBeRemoved = document.querySelector('#no-pseudo');
+  const sheetParent = sheetToBeRemoved.parentNode;
+  sheetParent.removeChild(sheetToBeRemoved);
+};
+
 //const sortByDay = sortByKey('dateStart', true);
 
 const isDatesEqual = (dateA, dateB) => (dateA === null && dateB === null) || dayjs(dateA).isSame(dateB);
@@ -75,4 +96,4 @@ const filterOutFuture = (point) => point.dateStart >= dayjs();
 
 const fiterOutPast = (point) => (point.dateStart < dayjs()) || (point.dateStart > dayjs() > point.dateEnd);
 
-export { calculateDuration, showPointDataHelper, getTravelTime, getTripRoute, getTripCost, isDatesEqual, sortByTime, sortByPrice, filterOutFuture, fiterOutPast, Messages, filter};
+export { getPointTimeDuration, calculateDuration, showPointDataHelper, getTravelTime, getTripRoute, getTripCost, hidePseudoElement, showPseudoElement, isDatesEqual, sortByTime, sortByPrice, filterOutFuture, fiterOutPast, Messages, filter, formatDuration};
