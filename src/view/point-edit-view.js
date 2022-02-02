@@ -16,7 +16,7 @@ const showOffers = (availableOffers, selectedOffers) =>
     <div class="event__available-offers">
     ${availableOffers.map((offer) =>
     `<div class="event__offer-selector">
-        <input class="event__offer-checkbox  visually-hidden" id="event-offer-${offer.title.split(' ').pop()}-1" type="checkbox" name="event-offer-${offer.title.split(' ').pop()}" ${(selectedOffers.find((item) => item.title === offer.title)) ? 'checked' : ''} >
+        <input class="event__offer-checkbox  visually-hidden" id="event-offer-${offer.title.split(' ').pop()}-1" type="checkbox" name="event-offer-${offer.title.split(' ').pop()}" ${(selectedOffers.find((item) => item.title === offer.title)) ? 'checked' : ''}  data-offer-title="${offer.title}" data-offer-price="${offer.price}">
         <label class="event__offer-label" for="event-offer-${offer.title.split(' ').pop()}-1">
           <span class="event__offer-title">${offer.title}</span>
           &plus;&euro;&nbsp;
@@ -140,13 +140,21 @@ export default class PointEditView extends SmartView {
     return createPointTemplate(this._data, this.#state);
   }
 
-  static parsePointToData = (point) => (
-    {...point}
-  );
+  static parsePointToData = (point) => ({...point,
+    isDisabled: false,
+    isSaving: false,
+    isDeleting: false,
+  });
 
-  static parseDataToPoint = (data) => (
-    {...data}
-  );
+  static parseDataToPoint = (data) => {
+    const point = {...data};
+
+    delete point.isDisabled;
+    delete point.isSaving;
+    delete point.isDeleting;
+
+    return point;
+  };
 
   removeElement = () => {
     super.removeElement();
@@ -186,6 +194,7 @@ export default class PointEditView extends SmartView {
 
   #formSubmitHandler = (evt) => {
     evt.preventDefault();
+    this.#checkOffersHandler();
     this._callback.formSubmit(PointEditView.parseDataToPoint(this._data));
   }
 
@@ -205,6 +214,21 @@ export default class PointEditView extends SmartView {
     evt.preventDefault();
     this.updateData({
       type: evt.target.value,
+    });
+  }
+
+  #checkOffersHandler = () => {
+    if(!this.element.querySelector('.event__section--offers')) {
+      return;
+    }
+
+    const availableOffers = getAvailableOffers(this._data.type, ALL_OFFERS);
+    const selectedOffers = this.element.querySelectorAll('.event__offer-checkbox:checked');
+
+    const offers = availableOffers.filter((offer) => [...selectedOffers].find((item) => offer.title === item.dataset.offerTitle));
+
+    this.updateData({
+      offers: offers,
     });
   }
 
@@ -245,13 +269,12 @@ export default class PointEditView extends SmartView {
 
   #pointChangeHandler = (evt) => {
     this.updateData({
-      basePrice: evt.target.value,
+      basePrice: Number(evt.target.value),
     }, true);
   }
 
   #setInnerHandlers = () => {
     this.element.querySelector('.event__type-group').addEventListener('change', this.#pointTypeChangeHandler);
     this.element.querySelector('.event__input--destination').addEventListener('change', this.#destinationChangeHandler);
-    // this.element.querySelector('.event__details').addEventListener('click', this.#offersChangeHandler);
   }
 }

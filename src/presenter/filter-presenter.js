@@ -72,4 +72,14 @@ export default class FilterPresenter {
 
     this.#filterModel.setFilter(UpdateType.MAJOR, filterType);
   }
+
+  disableFilters = () => {
+    const filters = this.#filterComponent.element.querySelectorAll('.trip-filters__filter-input');
+    [...filters].map((input) => { input.disabled = true; });
+  }
+
+  enableFilters = () => {
+    const filters = this.#filterComponent.element.querySelectorAll('.trip-filters__filter-input');
+    [...filters].map((input) => { input.disabled = false; });
+  }
 }

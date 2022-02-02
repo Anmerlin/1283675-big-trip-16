@@ -14,6 +14,9 @@ const RenderingLocation = {
 const FormState = {
   DEFAULT: 'EDIT',
   ADD: 'ADD',
+  SAVING: 'SAVING',
+  DELETING: 'DELETING',
+  ABORTING: 'ABORTING',
 };
 
 const Mode = {
@@ -43,6 +46,7 @@ const UpdateType = {
   PATCH: 'PATCH',
   MINOR: 'MINOR',
   MAJOR: 'MAJOR',
+  INIT: 'INIT',
 };
 
 const NavigationItem = {

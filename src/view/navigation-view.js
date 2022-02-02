@@ -9,11 +9,7 @@ const createNavigationTemplate = () => (
 );
 
 export default class NavigationView extends AbstractView {
-  constructor(navigationItem) {
-    super();
-
-    this._navigationItem = navigationItem;
-  }
+  #navigationItem = NavigationItem.TABLE;
 
   get template() {
     return createNavigationTemplate();
@@ -24,12 +20,10 @@ export default class NavigationView extends AbstractView {
     this.element.addEventListener('click', this.#navigationClickHandler);
   }
 
-  setNavigationItem = (navigationItem) => {
-    const selectedItem = this.element.querySelector(`[data-navigation-item=${navigationItem}]`);
-
-    if (selectedItem !== null) {
-      selectedItem.classList.toggle('trip-tabs__btn--active');
-    }
+  #setNavigationItem = (navigationItem) => {
+    const items =  this.element.querySelectorAll('.trip-tabs__btn');
+    [...items].map((item) => item.classList.remove('trip-tabs__btn--active'));
+    navigationItem.classList.add('trip-tabs__btn--active');
   }
 
   #navigationClickHandler = (evt) => {
@@ -40,14 +34,13 @@ export default class NavigationView extends AbstractView {
       return;
     }
 
-    if(selectedItem === this._navigationItem) {
+    if(selectedItem === this.#navigationItem) {
       return;
     }
 
-    this._navigationItem = selectedItem;
-    const items =  this.element.querySelectorAll('.trip-tabs__btn');
-    [...items].map((item) => item.classList.toggle('trip-tabs__btn--active'));
+    this.#navigationItem = selectedItem;
 
+    this.#setNavigationItem(evt.target);
     this._callback.navigationClick(selectedItem);
   }
 }
