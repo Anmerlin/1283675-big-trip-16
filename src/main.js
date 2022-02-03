@@ -1,6 +1,6 @@
 import { FilterType, NavigationItem, UpdateType } from './helpers/consts.js';
 import { render, remove } from './helpers/render.js';
-import { hidePseudoElement, showPseudoElement } from './helpers/common.js';
+import { toggleHiddenClass } from './helpers/common.js';
 import NavigationView from './view/navigation-view.js';
 import StatisticsView from './view/statistics-view.js';
 import TripPresenter from './presenter/trip-presenter.js';
@@ -14,7 +14,7 @@ import ApiService from './api/api-service.js';
 
 
 const URI = 'https://16.ecmascript.pages.academy/big-trip';
-const AUTHORIZATION = 'Basic qg50cx21iglrysd';
+const AUTHORIZATION = 'Basic qg50cx16iglrysd';
 
 let statisticComponent = null;
 
@@ -50,7 +50,7 @@ const handleNavigationClick = (navigationItem) => {
       addNewPointButton.disabled = false;
       remove(statisticComponent);
       tripPresenter.init();
-      showPseudoElement();
+      toggleHiddenClass(tripEventsElement);
       break;
     case NavigationItem.STATS:
       filterPresenter.disableFilters();
@@ -58,7 +58,7 @@ const handleNavigationClick = (navigationItem) => {
       tripPresenter.destroy();
       statisticComponent = new StatisticsView(pointsModel.points);
       render(mainContainerElement, statisticComponent);
-      hidePseudoElement();
+      toggleHiddenClass(tripEventsElement);
       break;
   }
 };

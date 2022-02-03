@@ -1,4 +1,6 @@
 import { Method, DataPath } from '../helpers/consts.js';
+
+const requestHeaders = new Headers({'Content-Type': 'application/json'});
 export default class ApiService {
   #endPoint = null;
   #authorization = null;
@@ -28,7 +30,7 @@ export default class ApiService {
       url: `${DataPath.POINTS}/${point.id}`,
       method: Method.PUT,
       body: JSON.stringify(this.#adaptToServer(point)),
-      headers: new Headers({'Content-Type': 'application/json'}),
+      headers: requestHeaders,
     });
 
     const parsedResponse = await ApiService.parseResponse(response);
@@ -41,7 +43,7 @@ export default class ApiService {
       url: DataPath.POINTS,
       method: Method.POST,
       body: JSON.stringify(this.#adaptToServer(point)),
-      headers: new Headers({'Content-Type': 'application/json'}),
+      headers: requestHeaders,
     });
 
     const parsedResponse = await ApiService.parseResponse(response);

@@ -10,34 +10,37 @@ import '../../node_modules/flatpickr/dist/flatpickr.min.css';
 
 const getAvailableOffers = (type, offers) => (offers.find((offer) => offer.type.toLowerCase() === type.toLowerCase())).offers;
 
-const showOffers = (availableOffers, selectedOffers, isDisabled) =>
+const generateOffersList = (availableOffers, selectedOffers, isDisabled) => `
+  <div class="event__available-offers">${availableOffers.map((offer) => `<div class="event__offer-selector">
+    <input class="event__offer-checkbox  visually-hidden" id="event-offer-${getUniqueMarkupName(offer.title)}-1" type="checkbox" name="event-offer-${getUniqueMarkupName(offer.title)}" ${(selectedOffers.find((item) => item.title === offer.title)) ? 'checked' : ''} ${isDisabled ? 'disabled' : ''} data-offer-title="${offer.title}" data-offer-price="${offer.price}">
+    <label class="event__offer-label" for="event-offer-${getUniqueMarkupName(offer.title)}-1">
+      <span class="event__offer-title">${offer.title}</span>
+      &plus;&euro;&nbsp;
+      <span class="event__offer-price">${offer.price}</span>
+    </label>
+  </div>`).join('\n')}
+</div>`;
+
+const showOffers = (availableOffers, selectedOffers, type, isDisabled) =>
   `<section class="event__section  event__section--offers">
     <h3 class="event__section-title  event__section-title--offers">Offers</h3>
-    <div class="event__available-offers">
-    ${availableOffers.map((offer) =>
-    `<div class="event__offer-selector">
-        <input class="event__offer-checkbox  visually-hidden" id="event-offer-${getUniqueMarkupName(offer.title)}-1" type="checkbox" name="event-offer-${getUniqueMarkupName(offer.title)}" ${(selectedOffers.find((item) => item.title === offer.title)) ? 'checked' : ''} ${isDisabled ? 'disabled' : ''} data-offer-title="${offer.title}" data-offer-price="${offer.price}">
-        <label class="event__offer-label" for="event-offer-${getUniqueMarkupName(offer.title)}-1">
-          <span class="event__offer-title">${offer.title}</span>
-          &plus;&euro;&nbsp;
-          <span class="event__offer-price">${offer.price}</span>
-        </label>
-    </div>`)
-    .join('\n')}
-  </div>
-</section>`;
+    ${!type ? 'Please select event type for additional offers' : generateOffersList(availableOffers, selectedOffers, isDisabled)}
+  </section>`;
 
-const showDestination = ({description = '', pictures = ''}) =>
+const generateDestinationInfo = ({ description = '', pictures = [] }) => `
+  <p class="event__destination-description">${description}</p>
+  ${(pictures.length !== 0) ?
+    `<div class="event__photos-container">
+    <div class="event__photos-tape">
+    ${pictures.map((picture) =>
+    `<img class="event__photo" src="${picture.src}" alt="${picture.description}">`).join('\n')}
+    </div>
+  </div>` : ''}`;
+
+const showDestination = (destination) =>
   `<section class="event__section  event__section--destination">
     <h3 class="event__section-title  event__section-title--destination">Destination</h3>
-    <p class="event__destination-description">${description}</p>
-    ${(pictures.length !== 0) ?
-    `<div class="event__photos-container">
-      <div class="event__photos-tape">
-      ${pictures.map((picture) =>
-    `<img class="event__photo" src="${picture.src}" alt="${picture.description}">`).join('\n')}
-      </div>
-    </div>` : ''}
+      ${!Object.keys(destination).length ? generateDestinationInfo({ description: 'Please select the destination for preview', pictures: [] }) : generateDestinationInfo(destination)}
   </section>`;
 
 const generatePointTypeList = (type, offers) => `${offers
@@ -47,7 +50,6 @@ const generatePointTypeList = (type, offers) => `${offers
       <label class="event__type-label  event__type-label--${offer.type}" for="event-type-${offer.type}-1">${setCapitalizeText(offer.type)}</label>
     </div>`)
   .join('\n\n')}`;
-
 
 const generateDestinationlist = (destinations) => `${destinations
   .map((destination) =>
@@ -93,9 +95,9 @@ const createPointTemplate = (point, offers, destinations, state) => {
 
         <div class="event__field-group  event__field-group--destination">
           <label class="event__label  event__type-output" for="event-destination-1">
-            ${type}
+            ${type ? type : 'Select type'}
           </label>
-          <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${destination.name || '' }" list="destination-list-1" ${isDisabled ? 'disabled' : ''}>
+          <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${destination.name || ''}" list="destination-list-1" ${isDisabled ? 'disabled' : ''} placeholder="Select destination">
           <datalist id="destination-list-1">
             ${generateDestinationlist(destinations)}
           </datalist>
@@ -125,9 +127,9 @@ const createPointTemplate = (point, offers, destinations, state) => {
       </header>
       <section class="event__details">
 
-        ${allPointOffers.length && showOffers(allPointOffers, offersPoint, isDisabled) || ''}
+        ${allPointOffers.length && showOffers(allPointOffers, offersPoint, type, isDisabled) || `${state === FormState.ADD && type === '' ? showOffers(allPointOffers, offersPoint, type, isDisabled) : ''}`}
 
-        ${Object.keys(destinationInfo).length && showDestination(destinationInfo) || ''}
+        ${Object.keys(destinationInfo).length && showDestination(destinationInfo) || `${state === FormState.ADD ? showDestination(destinationInfo) : ''}`}
       </section>
     </form>
   </li>`;
@@ -175,17 +177,6 @@ export default class PointEditView extends SmartView {
     this.removeRangeDatepicker();
   }
 
-  restoreHandlers = () => {
-    this.#setInnerHandlers();
-    this.setRangeDatepicker();
-    this.setPriceChangeHandler();
-    this.setFormSubmitHandler(this._callback.formSubmit);
-    if(this.#state === FormState.DEFAULT) {
-      this.setButtonEditClickHandler(this._callback.buttonEditClick);
-    }
-    this.setButtonDeleteClickHandler(this._callback.buttonDeleteClick);
-  }
-
   setButtonEditClickHandler = (callback) => {
     this._callback.buttonEditClick = callback;
     this.element.querySelector('.event__rollup-btn').addEventListener('click', this.#buttonEditClickHandler);
@@ -199,6 +190,43 @@ export default class PointEditView extends SmartView {
   setFormSubmitHandler = (callback) => {
     this._callback.formSubmit = callback;
     this.element.querySelector('form').addEventListener('submit', this.#formSubmitHandler);
+  }
+
+  setRangeDatepicker = () => {
+    this.removeRangeDatepicker();
+
+    this.#rangeDatepicker = flatpickr(
+      this.element.querySelector('#event-start-time-1'),
+      {
+        enableTime: true,
+        dateFormat: 'd/m/y H:i',
+        onChange: this.#pointDateRangeChangeHandler,
+        plugins: [new rangePlugin({ input: this.element.querySelector('#event-end-time-1') })],
+      },
+    );
+  }
+
+  setPriceChangeHandler = (callback) => {
+    this._callback.priceChange = callback;
+    this.element.querySelector('.event__input--price').addEventListener('input', this.#pointChangeHandler);
+  }
+
+  removeRangeDatepicker = () => {
+    if (this.#rangeDatepicker) {
+      this.#rangeDatepicker.destroy();
+      this.#rangeDatepicker = null;
+    }
+  }
+
+  restoreHandlers = () => {
+    this.#setInnerHandlers();
+    this.setRangeDatepicker();
+    this.setPriceChangeHandler();
+    this.setFormSubmitHandler(this._callback.formSubmit);
+    if (this.#state === FormState.DEFAULT) {
+      this.setButtonEditClickHandler(this._callback.buttonEditClick);
+    }
+    this.setButtonDeleteClickHandler(this._callback.buttonDeleteClick);
   }
 
   #buttonEditClickHandler = (evt) => {
@@ -219,6 +247,14 @@ export default class PointEditView extends SmartView {
 
   #destinationChangeHandler = (evt) => {
     const destination = getDestination(evt.target.value, this.#destinations);
+    const destinationInput = this.element.querySelector('.event__input--destination');
+    if (destination === undefined) {
+      destinationInput.setCustomValidity('Unfortunately this place unable for a trip');
+      destinationInput.reportValidity();
+      return;
+    }
+    destinationInput.setCustomValidity('');
+    destinationInput.reportValidity();
     this.updateData({
       destination,
     });
@@ -232,7 +268,7 @@ export default class PointEditView extends SmartView {
   }
 
   #checkOffersHandler = () => {
-    if(!this.element.querySelector('.event__section--offers')) {
+    if (!this.element.querySelector('.event__available-offers')) {
       return;
     }
 
@@ -246,27 +282,6 @@ export default class PointEditView extends SmartView {
     }, true);
   }
 
-  setRangeDatepicker = () => {
-    this.removeRangeDatepicker();
-
-    this.#rangeDatepicker = flatpickr(
-      this.element.querySelector('#event-start-time-1'),
-      {
-        enableTime: true,
-        dateFormat: 'd/m/y H:i',
-        onChange: this.#pointDateRangeChangeHandler,
-        plugins: [new rangePlugin({ input: this.element.querySelector('#event-end-time-1')})],
-      },
-    );
-  }
-
-  removeRangeDatepicker = () => {
-    if (this.#rangeDatepicker) {
-      this.#rangeDatepicker.destroy();
-      this.#rangeDatepicker = null;
-    }
-  }
-
   #pointDateRangeChangeHandler = ([userDateStart, userDateEnd]) => {
     this.updateData({
       dateStart: userDateStart,
@@ -274,15 +289,13 @@ export default class PointEditView extends SmartView {
     }, true);
   }
 
-  setPriceChangeHandler = (callback) => {
-    this._callback.priceChange = callback;
-    this.element.querySelector('.event__input--price').addEventListener('input', this.#pointChangeHandler);
-  }
-
   #pointChangeHandler = (evt) => {
-    this.updateData({
-      basePrice: Number(evt.target.value),
-    }, true);
+    const basePrice = Number(evt.target.value);
+    if (basePrice > 0) {
+      this.updateData({
+        basePrice,
+      }, true);
+    }
   }
 
   #setInnerHandlers = () => {

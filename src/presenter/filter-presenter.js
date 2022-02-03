@@ -1,4 +1,5 @@
 import { FilterType, UpdateType } from '../helpers/consts.js';
+import { filter } from '../helpers/common.js';
 import { render, replace, remove } from '../helpers/render.js';
 import FilterView from '../view/filters-view.js';
 
@@ -49,6 +50,17 @@ export default class FilterPresenter {
 
     replace(this.#filterComponent, prevFilterComponent);
     remove(prevFilterComponent);
+
+    const points = this.#pointsModel.points;
+    const filterItems = this.#filterComponent.element.querySelectorAll('.trip-filters__filter-input');
+
+    [...filterItems]
+      .map((filterItem) => {
+        const filteredPoints = filter[filterItem.value](points);
+        if (!filteredPoints.length) {
+          filterItem.disabled = true;
+        }
+      });
   }
 
   destroy = () => {
@@ -59,6 +71,16 @@ export default class FilterPresenter {
     this.#filterModel.removeObserver(this.#handleModelEvent);
 
     this.#filterModel.setFilter(UpdateType.MAJOR, FilterType.DEFAULT);
+  }
+
+  disableFilters = () => {
+    const filters = this.#filterComponent.element.querySelectorAll('.trip-filters__filter-input');
+    [...filters].map((input) => { input.disabled = true; });
+  }
+
+  enableFilters = () => {
+    const filters = this.#filterComponent.element.querySelectorAll('.trip-filters__filter-input');
+    [...filters].map((input) => { input.disabled = false; });
   }
 
   #handleModelEvent = () => {
@@ -73,13 +95,4 @@ export default class FilterPresenter {
     this.#filterModel.setFilter(UpdateType.MAJOR, filterType);
   }
 
-  disableFilters = () => {
-    const filters = this.#filterComponent.element.querySelectorAll('.trip-filters__filter-input');
-    [...filters].map((input) => { input.disabled = true; });
-  }
-
-  enableFilters = () => {
-    const filters = this.#filterComponent.element.querySelectorAll('.trip-filters__filter-input');
-    [...filters].map((input) => { input.disabled = false; });
-  }
 }

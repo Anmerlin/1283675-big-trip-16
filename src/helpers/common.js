@@ -21,13 +21,16 @@ const getPointTimeDuration = (point) => (dayjs(point.dateEnd)).diff(dayjs(point.
 
 const formatDuration = (time) => {
   const durationObject = dayjs.duration(time);
-  return durationObject.format(`${!durationObject.days() ? '' : 'DD[D]'} ${!durationObject.hours() && !durationObject.days()  ? '' : 'HH[H]'} mm[M]`);
+  return durationObject.format(`${!durationObject.days() ? '' : 'DD[D]'} ${!durationObject.hours() && !durationObject.days() ? '' : 'HH[H]'} mm[M]`);
 };
 
 const calculateDuration = (point) => {
   const differenceInMinutes = getPointTimeDuration(point);
   return formatDuration(differenceInMinutes);
 };
+
+const sortPointsByDateStart = (points) => points.slice().sort((a, b) => a.dateStart - b.dateStart);
+const sortPointsByDateEnd = (points) => points.slice().sort((a, b) => a.dateEnd - b.dateEnd);
 
 const showPointDataHelper = (dateStart, dateEnd) => {
   const dateEvent = dayjs(dateStart).format('YYYY-MM-DD');
@@ -43,42 +46,33 @@ const showPointDataHelper = (dateStart, dateEnd) => {
 };
 
 const getTravelTime = (points) => {
-  const sortedByDateFrom = points.slice().sort((a, b) => a.dateStart - b.dateStart);
-  const sortedByDateTo = points.slice().sort((a, b) => a.dateEnd - b.dateEnd);
-  const startDateRaw = dayjs(sortedByDateFrom[0].dateStart);
-  const endDateRaw = dayjs([...sortedByDateTo].pop().dateEnd);
+  const sortedPointsOnStart = sortPointsByDateStart(points);
+  const sortedPointsOnEnd = sortPointsByDateEnd(points);
+  const startDateRaw = dayjs(sortedPointsOnStart[0].dateStart);
+  const endDateRaw = dayjs([...sortedPointsOnEnd].pop().dateEnd);
   const startDate = dayjs(startDateRaw).format('MMM DD');
   const endDate = (
     dayjs(startDateRaw).month() === dayjs(endDateRaw).month() ?
       dayjs(endDateRaw).format('DD') : dayjs(endDateRaw).format('MMM DD')
   );
+
   return `${startDate}&nbsp;&mdash;&nbsp;${endDate}`;
 };
 
-const getTripRoute = (points) => (
-  (points.length <= DESTINATIONS_COUNT) ?
-    points.map((point) => point.destination.name).join(' &mdash; ') :
-    `${points[0].destination.name} &mdash; ... &mdash; ${[...points].pop().destination.name}`
-);
+const getTripRoute = (points) => {
+  const sortedPointsOnStart = sortPointsByDateStart(points);
+  const sortedPointsOnEnd = sortPointsByDateEnd(points);
+
+  return (points.length <= DESTINATIONS_COUNT) ?
+    sortedPointsOnStart.map((point) => point.destination.name).join(' &mdash; ') :
+    `${sortedPointsOnStart[0].destination.name} &mdash; ... &mdash; ${[...sortedPointsOnEnd].pop().destination.name}`;
+};
 
 const getTripCost = (points) => (
   points.reduce((totalSum, point) => (
     totalSum + point.basePrice + point.offersPoint.reduce((sum, offer) => sum + offer.price, 0)
   ), 0)
 );
-
-const hidePseudoElement = () => {
-  const styleSheet = document.createElement('style');
-  styleSheet.id = 'no-pseudo';
-  styleSheet.innerHTML = '*:after {content: none !important; display: none !important;}';
-  document.body.appendChild (styleSheet);
-};
-
-const showPseudoElement = () => {
-  const sheetToBeRemoved = document.querySelector('#no-pseudo');
-  const sheetParent = sheetToBeRemoved.parentNode;
-  sheetParent.removeChild(sheetToBeRemoved);
-};
 
 const isDatesEqual = (dateA, dateB) => (dateA === null && dateB === null) || dayjs(dateA).isSame(dateB);
 
@@ -92,4 +86,8 @@ const fiterOutPast = (point) => (point.dateStart < dayjs()) || (point.dateStart 
 
 const getUniqueMarkupName = (title) => title.split(' ').slice(-2).join('-').toLowerCase();
 
-export { getPointTimeDuration, calculateDuration, showPointDataHelper, getTravelTime, getTripRoute, getTripCost, hidePseudoElement, showPseudoElement, isDatesEqual, sortByTime, sortByPrice, filterOutFuture, fiterOutPast, Messages, filter, formatDuration, getUniqueMarkupName };
+const toggleHiddenClass = (element) => {
+  element.classList.toggle('trip-events--hidden');
+};
+
+export { getPointTimeDuration, calculateDuration, showPointDataHelper, getTravelTime, getTripRoute, getTripCost, isDatesEqual, sortByTime, sortByPrice, filterOutFuture, fiterOutPast, Messages, filter, formatDuration, getUniqueMarkupName, toggleHiddenClass };

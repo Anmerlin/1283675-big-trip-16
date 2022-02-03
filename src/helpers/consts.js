@@ -55,7 +55,7 @@ const NavigationItem = {
 };
 
 const NEW_POINT = {
-  'type': '',
+  'type': 'flight',
   'dateStart': dayjs(),
   'dateEnd': dayjs(),
   'destination': {

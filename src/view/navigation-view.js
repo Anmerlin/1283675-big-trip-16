@@ -21,7 +21,7 @@ export default class NavigationView extends AbstractView {
   }
 
   #setNavigationItem = (navigationItem) => {
-    const items =  this.element.querySelectorAll('.trip-tabs__btn');
+    const items = this.element.querySelectorAll('.trip-tabs__btn');
     [...items].map((item) => item.classList.remove('trip-tabs__btn--active'));
     navigationItem.classList.add('trip-tabs__btn--active');
   }
@@ -34,7 +34,7 @@ export default class NavigationView extends AbstractView {
       return;
     }
 
-    if(selectedItem === this.#navigationItem) {
+    if (selectedItem === this.#navigationItem) {
       return;
     }
 
