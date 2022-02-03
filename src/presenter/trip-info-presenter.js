@@ -11,6 +11,8 @@ export default class TripInfoPresenter {
   constructor(infoContainer, pointsModel) {
     this.#infoContainer = infoContainer;
     this.#pointsModel = pointsModel;
+
+    this.#pointsModel.addObserver(this.#handleModelEvent);
   }
 
   init = () => {
@@ -23,8 +25,6 @@ export default class TripInfoPresenter {
       }
       return;
     }
-
-    this.#pointsModel.addObserver(this.#handleModelEvent);
 
     this.#renderTripInfoComponent();
   }

@@ -65,7 +65,22 @@ const NEW_POINT = {
   },
   'basePrice': '',
   'isFavorite': false,
-  'offers': [],
+  'offersPoint': [],
 };
 
-export { POINT_COUNT, DESTINATIONS_COUNT, NEW_POINT, RenderingLocation, FormState, Mode, SortType, FilterType, UserAction, UpdateType, NavigationItem };
+const Method = {
+  GET: 'GET',
+  PUT: 'PUT',
+  POST: 'POST',
+  DELETE: 'DELETE',
+};
+
+const DataPath = {
+  POINTS: 'points',
+  DESTINATIONS: 'destinations',
+  OFFERS: 'offers',
+};
+
+const SHAKE_ANIMATION_TIMEOUT = 600;
+
+export { POINT_COUNT, DESTINATIONS_COUNT, NEW_POINT, RenderingLocation, FormState, Mode, SortType, FilterType, UserAction, UpdateType, NavigationItem, Method, DataPath, SHAKE_ANIMATION_TIMEOUT };

@@ -11,6 +11,8 @@ import PointNewPresenter from './point-new-presenter.js';
 export default class TripPresenter {
   #tripContainer = null;
   #pointsModel = null;
+  #offersModel = null;
+  #destinationsModel = null;
   #filterModel = null;
 
   #listPointsComponent = new ListPointsView();
@@ -24,12 +26,14 @@ export default class TripPresenter {
   #filterType = FilterType.DEFAULT;
   #isLoading = true;
 
-  constructor(tripContainer, pointsModel, filterModel) {
+  constructor(tripContainer, pointsModel, offersModel, destinationsModel, filterModel) {
     this.#tripContainer = tripContainer;
     this.#pointsModel = pointsModel;
+    this.#offersModel = offersModel;
+    this.#destinationsModel = destinationsModel;
     this.#filterModel = filterModel;
 
-    this.#pointNewPresenter = new PointNewPresenter(this.#listPointsComponent, this.#handleViewAction);
+    this.#pointNewPresenter = new PointNewPresenter(this.#listPointsComponent, this.#handleViewAction, offersModel, destinationsModel);
   }
 
   get points() {
@@ -58,6 +62,7 @@ export default class TripPresenter {
     this.#currentSortType = SortType.DEFAULT;
     this.#filterModel.setFilter(UpdateType.MAJOR, FilterType.DEFAULT);
 
+    this.#renderList();
     this.#pointNewPresenter.init(callback);
     document.querySelector('.trip-main__event-add-btn').disabled = true;
   }
@@ -159,7 +164,7 @@ export default class TripPresenter {
   }
 
   #renderPoint = (point) => {
-    const pointPresenter = new PointPresenter(this.#listPointsComponent, this.#handleViewAction, this.#handleModeChange);
+    const pointPresenter = new PointPresenter(this.#listPointsComponent, this.#handleViewAction, this.#handleModeChange, this.#offersModel, this.#destinationsModel);
 
     pointPresenter.init(point);
     this.#pointPresenter.set(point.id, pointPresenter);

@@ -1,18 +1,4 @@
-import PointsModel from '../model/points-model.js';
-
-const Method = {
-  GET: 'GET',
-  PUT: 'PUT',
-  POST: 'POST',
-  DELETE: 'DELETE',
-};
-
-const DataPath = {
-  POINTS: 'points',
-  DESTINATIONS: 'destinations',
-  OFFERS: 'offers',
-};
-
+import { Method, DataPath } from '../helpers/consts.js';
 export default class ApiService {
   #endPoint = null;
   #authorization = null;
@@ -32,7 +18,7 @@ export default class ApiService {
       .then(ApiService.parseResponse);
   }
 
-  get destination() {
+  get destinations() {
     return this.#load({url: DataPath.DESTINATIONS})
       .then(ApiService.parseResponse);
   }
@@ -99,11 +85,13 @@ export default class ApiService {
       'date_to': point.dateEnd instanceof Date ? point.dateEnd.toISOString() : null,
       'base_price': point.basePrice,
       'is_favorite': point.isFavorite,
+      'offers': point.offersPoint,
     };
 
     delete adaptedPoint.dateStart;
     delete adaptedPoint.dateEnd;
     delete adaptedPoint.basePrice;
+    delete adaptedPoint.offersPoint;
     delete adaptedPoint.isFavorite;
 
     return adaptedPoint;

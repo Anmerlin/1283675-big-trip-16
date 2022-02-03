@@ -1,23 +1,23 @@
 import dayjs from 'dayjs';
 import flatpickr from 'flatpickr';
 import rangePlugin from '../../node_modules/flatpickr/dist/plugins/rangePlugin';
-import { getAvailableOffers } from '../mock/point.js';
-import { dataOffers as ALL_OFFERS } from '../mock/offers.js';
-import { dataDestinations as ALL_DESTINATIONS} from '../mock/destinations.js';
 import { setCapitalizeText } from '../helpers/helpers.js';
 import { FormState } from '../helpers/consts.js';
+import { getUniqueMarkupName } from '../helpers/common.js';
 import SmartView from './smart-view.js';
 
 import '../../node_modules/flatpickr/dist/flatpickr.min.css';
 
-const showOffers = (availableOffers, selectedOffers) =>
+const getAvailableOffers = (type, offers) => (offers.find((offer) => offer.type.toLowerCase() === type.toLowerCase())).offers;
+
+const showOffers = (availableOffers, selectedOffers, isDisabled) =>
   `<section class="event__section  event__section--offers">
     <h3 class="event__section-title  event__section-title--offers">Offers</h3>
     <div class="event__available-offers">
     ${availableOffers.map((offer) =>
     `<div class="event__offer-selector">
-        <input class="event__offer-checkbox  visually-hidden" id="event-offer-${offer.title.split(' ').pop()}-1" type="checkbox" name="event-offer-${offer.title.split(' ').pop()}" ${(selectedOffers.find((item) => item.title === offer.title)) ? 'checked' : ''}  data-offer-title="${offer.title}" data-offer-price="${offer.price}">
-        <label class="event__offer-label" for="event-offer-${offer.title.split(' ').pop()}-1">
+        <input class="event__offer-checkbox  visually-hidden" id="event-offer-${getUniqueMarkupName(offer.title)}-1" type="checkbox" name="event-offer-${getUniqueMarkupName(offer.title)}" ${(selectedOffers.find((item) => item.title === offer.title)) ? 'checked' : ''} ${isDisabled ? 'disabled' : ''} data-offer-title="${offer.title}" data-offer-price="${offer.price}">
+        <label class="event__offer-label" for="event-offer-${getUniqueMarkupName(offer.title)}-1">
           <span class="event__offer-title">${offer.title}</span>
           &plus;&euro;&nbsp;
           <span class="event__offer-price">${offer.price}</span>
@@ -40,7 +40,7 @@ const showDestination = ({description = '', pictures = ''}) =>
     </div>` : ''}
   </section>`;
 
-const generatePointTypeList = (type) => `${ALL_OFFERS
+const generatePointTypeList = (type, offers) => `${offers
   .map((offer) =>
     `<div class="event__type-item">
       <input id="event-type-${offer.type}-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="${offer.type}" ${(offer.type === type.toLowerCase()) ? 'checked' : ''}>
@@ -49,7 +49,7 @@ const generatePointTypeList = (type) => `${ALL_OFFERS
   .join('\n\n')}`;
 
 
-const generateDestinationlist = () => `${ALL_DESTINATIONS
+const generateDestinationlist = (destinations) => `${destinations
   .map((destination) =>
     `<option value="${destination.name}"></option>`
   )
@@ -57,10 +57,21 @@ const generateDestinationlist = () => `${ALL_DESTINATIONS
 
 const getDestination = (name, destinations) => (destinations.find((destination) => destination.name === name));
 
-const createPointTemplate = (point, state) => {
-  const { type, destination, dateStart, dateEnd, basePrice, offers } = point;
-  const allPointOffers = type ? getAvailableOffers(type, ALL_OFFERS) : [];
-  const destinationInfo = getDestination(destination.name, ALL_DESTINATIONS) || {};
+const createPointTemplate = (point, offers, destinations, state) => {
+  const {
+    type,
+    destination,
+    dateStart,
+    dateEnd,
+    basePrice,
+    offersPoint,
+    isDisabled,
+    isSaving,
+    isDeleting,
+  } = point;
+
+  const allPointOffers = type ? getAvailableOffers(type, offers) : [];
+  const destinationInfo = getDestination(destination.name, destinations) || {};
 
   return `<li class="trip-events__item">
     <form class="event event--edit" action="#" method="post">
@@ -70,12 +81,12 @@ const createPointTemplate = (point, state) => {
             <span class="visually-hidden">Choose event type</span>
             <img class="event__type-icon" width="17" height="17" src="img/icons/${type ? type.toLowerCase() : 'transport'}.png" alt="Event type icon">
           </label>
-          <input class="event__type-toggle  visually-hidden" id="event-type-toggle-1" type="checkbox">
+          <input class="event__type-toggle  visually-hidden" id="event-type-toggle-1" type="checkbox" ${isDisabled ? 'disabled' : ''}>
 
           <div class="event__type-list">
-            <fieldset class="event__type-group">
+            <fieldset class="event__type-group" ${isDisabled ? 'disabled' : ''}>
               <legend class="visually-hidden">Event type</legend>
-                ${generatePointTypeList(type)}
+                ${generatePointTypeList(type, offers)}
             </fieldset>
           </div>
         </div>
@@ -84,18 +95,18 @@ const createPointTemplate = (point, state) => {
           <label class="event__label  event__type-output" for="event-destination-1">
             ${type}
           </label>
-          <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${destination.name || '' }" list="destination-list-1">
+          <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${destination.name || '' }" list="destination-list-1" ${isDisabled ? 'disabled' : ''}>
           <datalist id="destination-list-1">
-            ${generateDestinationlist()}
+            ${generateDestinationlist(destinations)}
           </datalist>
         </div>
 
         <div class="event__field-group  event__field-group--time">
           <label class="visually-hidden" for="event-start-time-1">From</label>
-          <input class="event__input  event__input--time" id="event-start-time-1" type="text" name="event-start-time" value="${dayjs(dateStart).format('DD[/]MM[/]YY HH:mm')}">
+          <input class="event__input  event__input--time" id="event-start-time-1" type="text" name="event-start-time" value="${dayjs(dateStart).format('DD[/]MM[/]YY HH:mm')}" ${isDisabled ? 'disabled' : ''}>
           &mdash;
           <label class="visually-hidden" for="event-end-time-1">To</label>
-          <input class="event__input  event__input--time" id="event-end-time-1" type="text" name="event-end-time" value="${dayjs(dateEnd).format('DD[/]MM[/]YY HH:mm')}">
+          <input class="event__input  event__input--time" id="event-end-time-1" type="text" name="event-end-time" value="${dayjs(dateEnd).format('DD[/]MM[/]YY HH:mm')}" ${isDisabled ? 'disabled' : ''}>
         </div>
 
         <div class="event__field-group  event__field-group--price">
@@ -103,18 +114,18 @@ const createPointTemplate = (point, state) => {
             <span class="visually-hidden">Price</span>
             &euro;
           </label>
-          <input class="event__input  event__input--price" id="event-price-1" type="text" name="event-price" value="${basePrice}" pattern="^[ 0-9]+$">
+          <input class="event__input  event__input--price" id="event-price-1" type="text" name="event-price" value="${basePrice}" pattern="^[ 0-9]+$" ${isDisabled ? 'disabled' : ''}>
         </div>
 
-        <button class="event__save-btn  btn  btn--blue" type="submit">Save</button>
-        <button class="event__reset-btn" type="reset">${(state === FormState.DEFAULT) ? 'Delete' : 'Cancel'}</button>
+        <button class="event__save-btn  btn  btn--blue" type="submit" ${isDisabled ? 'disabled' : ''}>${isSaving ? 'Saving...' : 'Save'}</button>
+        <button class="event__reset-btn" type="reset" ${isDisabled ? 'disabled' : ''}>${(state === FormState.DEFAULT) ? `${isDeleting ? 'Deleting...' : 'Delete'}` : 'Cancel'}</button>
         ${(state === FormState.DEFAULT) ? `<button class="event__rollup-btn" type="button">
           <span class="visually-hidden">Open event</span>
         </button>` : ''}
       </header>
       <section class="event__details">
 
-        ${allPointOffers.length && showOffers(allPointOffers, offers) || ''}
+        ${allPointOffers.length && showOffers(allPointOffers, offersPoint, isDisabled) || ''}
 
         ${Object.keys(destinationInfo).length && showDestination(destinationInfo) || ''}
       </section>
@@ -123,21 +134,24 @@ const createPointTemplate = (point, state) => {
 };
 
 export default class PointEditView extends SmartView {
-  // #point = {};
+  #offers= null;
+  #destinations = null;
   #state = null;
   #rangeDatepicker = null;
 
-  constructor(point, state) {
+  constructor(point, offersModel, destinationsModel, state) {
     super();
-    // this.#point = point;
+    this.#offers = offersModel.offers;
+    this.#destinations = destinationsModel.destinations;
     this.#state = state;
+
     this._data = PointEditView.parsePointToData(point);
 
     this.#setInnerHandlers();
   }
 
   get template() {
-    return createPointTemplate(this._data, this.#state);
+    return createPointTemplate(this._data, this.#offers, this.#destinations, this.#state);
   }
 
   static parsePointToData = (point) => ({...point,
@@ -166,7 +180,7 @@ export default class PointEditView extends SmartView {
     this.setRangeDatepicker();
     this.setPriceChangeHandler();
     this.setFormSubmitHandler(this._callback.formSubmit);
-    if(this.element.querySelector('event__rollup-btn')) {
+    if(this.#state === FormState.DEFAULT) {
       this.setButtonEditClickHandler(this._callback.buttonEditClick);
     }
     this.setButtonDeleteClickHandler(this._callback.buttonDeleteClick);
@@ -204,7 +218,7 @@ export default class PointEditView extends SmartView {
   }
 
   #destinationChangeHandler = (evt) => {
-    const destination = getDestination(evt.target.value, ALL_DESTINATIONS);
+    const destination = getDestination(evt.target.value, this.#destinations);
     this.updateData({
       destination,
     });
@@ -222,14 +236,14 @@ export default class PointEditView extends SmartView {
       return;
     }
 
-    const availableOffers = getAvailableOffers(this._data.type, ALL_OFFERS);
+    const availableOffers = getAvailableOffers(this._data.type, this.#offers);
     const selectedOffers = this.element.querySelectorAll('.event__offer-checkbox:checked');
 
     const offers = availableOffers.filter((offer) => [...selectedOffers].find((item) => offer.title === item.dataset.offerTitle));
 
     this.updateData({
-      offers: offers,
-    });
+      offersPoint: offers,
+    }, true);
   }
 
   setRangeDatepicker = () => {
@@ -257,9 +271,7 @@ export default class PointEditView extends SmartView {
     this.updateData({
       dateStart: userDateStart,
       dateEnd: userDateEnd,
-    },
-    // true
-    );
+    }, true);
   }
 
   setPriceChangeHandler = (callback) => {

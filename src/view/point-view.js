@@ -13,7 +13,7 @@ const showOffers = (offers) =>
   </ul>`;
 
 const createShowPointTemplate = (point) => {
-  const { type, destination: {name}, dateStart, dateEnd, basePrice, offers, isFavorite } = point;
+  const { type, destination: {name}, dateStart, dateEnd, basePrice, offersPoint, isFavorite } = point;
   const [dateEvent, shortDateEvent, timeStart, shortTimeStart, timeEnd, shortTimeEnd] = showPointDataHelper(dateStart, dateEnd);
 
   return `<li class="trip-events__item">
@@ -34,7 +34,7 @@ const createShowPointTemplate = (point) => {
     <p class="event__price">
       &euro;&nbsp;<span class="event__price-value">${basePrice}</span>
     </p>
-    ${offers.length !== 0 ? showOffers(offers) : ''}
+    ${offersPoint.length !== 0 ? showOffers(offersPoint) : ''}
     <button class="event__favorite-btn ${(isFavorite) ? 'event__favorite-btn--active' : ''}" type="button">
       <span class="visually-hidden">Add to favorite</span>
       <svg class="event__favorite-icon" width="28" height="28" viewBox="0 0 28 28">
