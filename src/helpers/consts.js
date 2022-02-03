@@ -4,6 +4,8 @@ const POINT_COUNT = 20;
 
 const DESTINATIONS_COUNT = 3;
 
+const MIN_BASE_PRICE = 1;
+
 const RenderingLocation = {
   BEFORE_BEGIN: 'beforebegin',
   AFTER_BEGIN: 'afterbegin',
@@ -83,4 +85,4 @@ const DataPath = {
 
 const SHAKE_ANIMATION_TIMEOUT = 600;
 
-export { POINT_COUNT, DESTINATIONS_COUNT, NEW_POINT, RenderingLocation, FormState, Mode, SortType, FilterType, UserAction, UpdateType, NavigationItem, Method, DataPath, SHAKE_ANIMATION_TIMEOUT };
+export { POINT_COUNT, DESTINATIONS_COUNT, MIN_BASE_PRICE, NEW_POINT, RenderingLocation, FormState, Mode, SortType, FilterType, UserAction, UpdateType, NavigationItem, Method, DataPath, SHAKE_ANIMATION_TIMEOUT };

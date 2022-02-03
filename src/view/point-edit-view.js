@@ -2,7 +2,7 @@ import dayjs from 'dayjs';
 import flatpickr from 'flatpickr';
 import rangePlugin from '../../node_modules/flatpickr/dist/plugins/rangePlugin';
 import { setCapitalizeText } from '../helpers/helpers.js';
-import { FormState } from '../helpers/consts.js';
+import { MIN_BASE_PRICE, FormState } from '../helpers/consts.js';
 import { getUniqueMarkupName } from '../helpers/common.js';
 import SmartView from './smart-view.js';
 
@@ -116,7 +116,7 @@ const createPointTemplate = (point, offers, destinations, state) => {
             <span class="visually-hidden">Price</span>
             &euro;
           </label>
-          <input class="event__input  event__input--price" id="event-price-1" type="text" name="event-price" value="${basePrice}" pattern="^[ 0-9]+$" ${isDisabled ? 'disabled' : ''}>
+          <input class="event__input  event__input--price" id="event-price-1" type="text" name="event-price" value="${basePrice}" pattern="(?!0+$)[0-9]+" ${isDisabled ? 'disabled' : ''}>
         </div>
 
         <button class="event__save-btn  btn  btn--blue" type="submit" ${isDisabled ? 'disabled' : ''}>${isSaving ? 'Saving...' : 'Save'}</button>
@@ -237,6 +237,29 @@ export default class PointEditView extends SmartView {
   #formSubmitHandler = (evt) => {
     evt.preventDefault();
     this.#checkOffersHandler();
+
+    const destination = this.element.querySelector('.event__input--destination');
+    const price = this.element.querySelector('.event__input--price');
+
+    if (destination.value.length <= 0) {
+      destination.setCustomValidity('Choose a place to trip');
+      return destination.reportValidity();
+    }
+
+    destination.setCustomValidity('');
+    destination.reportValidity();
+
+    const minPrice = MIN_BASE_PRICE;
+    const currentValue = price.value;
+
+    if (currentValue === '' || currentValue < minPrice ) {
+      price.setCustomValidity(`The current value of the event is less than ${minPrice} euro`);
+      return price.reportValidity();
+    }
+
+    price.setCustomValidity('');
+    price.reportValidity();
+
     this._callback.formSubmit(PointEditView.parseDataToPoint(this._data));
   }
 
@@ -248,16 +271,32 @@ export default class PointEditView extends SmartView {
   #destinationChangeHandler = (evt) => {
     const destination = getDestination(evt.target.value, this.#destinations);
     const destinationInput = this.element.querySelector('.event__input--destination');
+
     if (destination === undefined) {
       destinationInput.setCustomValidity('Unfortunately this place unable for a trip');
       destinationInput.reportValidity();
       return;
     }
+
     destinationInput.setCustomValidity('');
     destinationInput.reportValidity();
     this.updateData({
       destination,
     });
+  }
+
+  #basePriceChangeHandler = (evt) => {
+    const price = evt.target;
+    const minPrice = MIN_BASE_PRICE;
+    const currentValue = price.value;
+
+    if (currentValue === '' || currentValue < minPrice ) {
+      price.setCustomValidity(`The current value of the event is less than ${minPrice} euro`);
+      return price.reportValidity();
+    }
+
+    price.setCustomValidity('');
+    price.reportValidity();
   }
 
   #pointTypeChangeHandler = (evt) => {
@@ -300,6 +339,7 @@ export default class PointEditView extends SmartView {
 
   #setInnerHandlers = () => {
     this.element.querySelector('.event__type-group').addEventListener('change', this.#pointTypeChangeHandler);
-    this.element.querySelector('.event__input--destination').addEventListener('change', this.#destinationChangeHandler);
+    this.element.querySelector('.event__input--destination').addEventListener('input', this.#destinationChangeHandler);
+    this.element.querySelector('.event__input--price').addEventListener('input', this.#basePriceChangeHandler);
   }
 }
