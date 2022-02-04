@@ -5,9 +5,10 @@ import { getCostByType, getColor, getLigthenColors, getPointTypes, getCountByTyp
 import { formatDuration } from '../helpers/common.js';
 
 const BAR_HEIGHT = 55;
+const BASE_COLOR = '#000000';
 
 const renderMoneyChart = (moneyCtx, data) => {
-  const {pointTypes, labels, randomColors, randomLightenColors, costByType} = data;
+  const { pointTypes, labels, randomColors, randomLightenColors, costByType } = data;
 
   const sortedData = sortLabelsByIndex(labels, costByType);
 
@@ -34,7 +35,7 @@ const renderMoneyChart = (moneyCtx, data) => {
           font: {
             size: 13,
           },
-          color: '#000000',
+          color: BASE_COLOR,
           anchor: 'end',
           align: 'start',
           formatter: (val) => `€ ${val}`,
@@ -43,14 +44,14 @@ const renderMoneyChart = (moneyCtx, data) => {
       title: {
         display: true,
         text: 'MONEY',
-        fontColor: '#000000',
+        fontColor: BASE_COLOR,
         fontSize: 23,
         position: 'left',
       },
       scales: {
         yAxes: [{
           ticks: {
-            fontColor: '#000000',
+            fontColor: BASE_COLOR,
             padding: 5,
             fontSize: 13,
           },
@@ -81,7 +82,7 @@ const renderMoneyChart = (moneyCtx, data) => {
 };
 
 const renderTypeChart = (typeCtx, data) => {
-  const {pointTypes, labels, randomColors, randomLightenColors, countByType} = data;
+  const { pointTypes, labels, randomColors, randomLightenColors, countByType } = data;
 
   const sortedData = sortLabelsByIndex(labels, countByType);
 
@@ -108,7 +109,7 @@ const renderTypeChart = (typeCtx, data) => {
           font: {
             size: 13,
           },
-          color: '#000000',
+          color: BASE_COLOR,
           anchor: 'end',
           align: 'start',
           formatter: (val) => `${val}x`,
@@ -117,14 +118,14 @@ const renderTypeChart = (typeCtx, data) => {
       title: {
         display: true,
         text: 'TYPE',
-        fontColor: '#000000',
+        fontColor: BASE_COLOR,
         fontSize: 23,
         position: 'left',
       },
       scales: {
         yAxes: [{
           ticks: {
-            fontColor: '#000000',
+            fontColor: BASE_COLOR,
             padding: 5,
             fontSize: 13,
           },
@@ -155,7 +156,7 @@ const renderTypeChart = (typeCtx, data) => {
 };
 
 const renderTimeSpendChart = (timeCtx, data) => {
-  const {pointTypes, labels, randomColors, randomLightenColors, travelTimeByType} = data;
+  const { pointTypes, labels, randomColors, randomLightenColors, travelTimeByType } = data;
 
   const sortedData = sortLabelsByIndex(labels, travelTimeByType);
 
@@ -182,7 +183,7 @@ const renderTimeSpendChart = (timeCtx, data) => {
           font: {
             size: 13,
           },
-          color: '#000000',
+          color: BASE_COLOR,
           anchor: 'end',
           align: 'start',
           formatter: (val) => `${formatDuration(val)}`,
@@ -191,14 +192,14 @@ const renderTimeSpendChart = (timeCtx, data) => {
       title: {
         display: true,
         text: 'TIME-SPEND',
-        fontColor: '#000000',
+        fontColor: BASE_COLOR,
         fontSize: 23,
         position: 'left',
       },
       scales: {
         yAxes: [{
           ticks: {
-            fontColor: '#000000',
+            fontColor: BASE_COLOR,
             padding: 5,
             fontSize: 13,
           },

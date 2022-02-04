@@ -20,8 +20,8 @@ const filter = {
 const getPointTimeDuration = (point) => (dayjs(point.dateEnd)).diff(dayjs(point.dateStart));
 
 const formatDuration = (time) => {
-  const durationObject = dayjs.duration(time);
-  return durationObject.format(`${!durationObject.days() ? '' : 'DD[D]'} ${!durationObject.hours() && !durationObject.days() ? '' : 'HH[H]'} mm[M]`);
+  const durationsData = dayjs.duration(time);
+  return durationsData.format(`${!durationsData.days() ? '' : 'DD[D]'} ${!durationsData.hours() && !durationsData.days() ? '' : 'HH[H]'} mm[M]`);
 };
 
 const calculateDuration = (point) => {
@@ -76,13 +76,11 @@ const getTripCost = (points) => (
 
 const isDatesEqual = (dateA, dateB) => (dateA === null && dateB === null) || dayjs(dateA).isSame(dateB);
 
+const sortByDay = sortByKey('dateStart', true);
+
 const sortByTime = (pointA, pointB) => getPointTimeDuration(pointB) - getPointTimeDuration(pointA);
 
 const sortByPrice = sortByKey('basePrice');
-
-const filterOutFuture = (point) => point.dateStart >= dayjs();
-
-const fiterOutPast = (point) => (point.dateStart < dayjs()) || (point.dateStart > dayjs() > point.dateEnd);
 
 const getUniqueMarkupName = (title) => title.split(' ').slice(-2).join('-').toLowerCase();
 
@@ -90,4 +88,4 @@ const toggleHiddenClass = (element) => {
   element.classList.toggle('trip-events--hidden');
 };
 
-export { getPointTimeDuration, calculateDuration, showPointDataHelper, getTravelTime, getTripRoute, getTripCost, isDatesEqual, sortByTime, sortByPrice, filterOutFuture, fiterOutPast, Messages, filter, formatDuration, getUniqueMarkupName, toggleHiddenClass };
+export { getPointTimeDuration, calculateDuration, showPointDataHelper, getTravelTime, getTripRoute, getTripCost, isDatesEqual, sortByDay, sortByTime, sortByPrice, Messages, filter, formatDuration, getUniqueMarkupName, toggleHiddenClass };

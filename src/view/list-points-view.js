@@ -5,7 +5,7 @@ const createListPointsTemplate = () => (
   </ul>`
 );
 
-export default class ListPoints extends AbstractView {
+export default class ListPointsView extends AbstractView {
   get template() {
     return createListPointsTemplate();
   }

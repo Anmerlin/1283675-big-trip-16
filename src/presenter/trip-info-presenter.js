@@ -1,6 +1,6 @@
 import { RenderingLocation } from '../helpers/consts.js';
 import { remove, render, replace } from '../helpers/render.js';
-import TripInfoView from '../view/info-view.js';
+import TripInfoView from '../view/trip-info-view.js';
 
 export default class TripInfoPresenter {
   #points = null;

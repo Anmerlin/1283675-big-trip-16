@@ -38,10 +38,11 @@ const generateDestinationInfo = ({ description = '', pictures = [] }) => `
   </div>` : ''}`;
 
 const showDestination = (destination) =>
-  `<section class="event__section  event__section--destination">
+  (Object.keys(destination).length) ?
+    `<section class="event__section  event__section--destination">
     <h3 class="event__section-title  event__section-title--destination">Destination</h3>
-      ${!Object.keys(destination).length ? generateDestinationInfo({ description: 'Please select the destination for preview', pictures: [] }) : generateDestinationInfo(destination)}
-  </section>`;
+    ${generateDestinationInfo(destination)}
+  </section>` : '';
 
 const generatePointTypeList = (type, offers) => `${offers
   .map((offer) =>
@@ -156,25 +157,27 @@ export default class PointEditView extends SmartView {
     return createPointTemplate(this._data, this.#offers, this.#destinations, this.#state);
   }
 
-  static parsePointToData = (point) => ({...point,
-    isDisabled: false,
-    isSaving: false,
-    isDeleting: false,
-  });
-
-  static parseDataToPoint = (data) => {
-    const point = {...data};
-
-    delete point.isDisabled;
-    delete point.isSaving;
-    delete point.isDeleting;
-
-    return point;
-  };
-
   removeElement = () => {
     super.removeElement();
     this.removeRangeDatepicker();
+  }
+
+  removeRangeDatepicker = () => {
+    if (this.#rangeDatepicker) {
+      this.#rangeDatepicker.destroy();
+      this.#rangeDatepicker = null;
+    }
+  }
+
+  restoreHandlers = () => {
+    this.#setInnerHandlers();
+    this.setRangeDatepicker();
+    this.setPriceChangeHandler();
+    this.setFormSubmitHandler(this._callback.formSubmit);
+    if (this.#state === FormState.DEFAULT) {
+      this.setButtonEditClickHandler(this._callback.buttonEditClick);
+    }
+    this.setButtonDeleteClickHandler(this._callback.buttonDeleteClick);
   }
 
   setButtonEditClickHandler = (callback) => {
@@ -209,24 +212,6 @@ export default class PointEditView extends SmartView {
   setPriceChangeHandler = (callback) => {
     this._callback.priceChange = callback;
     this.element.querySelector('.event__input--price').addEventListener('input', this.#pointChangeHandler);
-  }
-
-  removeRangeDatepicker = () => {
-    if (this.#rangeDatepicker) {
-      this.#rangeDatepicker.destroy();
-      this.#rangeDatepicker = null;
-    }
-  }
-
-  restoreHandlers = () => {
-    this.#setInnerHandlers();
-    this.setRangeDatepicker();
-    this.setPriceChangeHandler();
-    this.setFormSubmitHandler(this._callback.formSubmit);
-    if (this.#state === FormState.DEFAULT) {
-      this.setButtonEditClickHandler(this._callback.buttonEditClick);
-    }
-    this.setButtonDeleteClickHandler(this._callback.buttonDeleteClick);
   }
 
   #buttonEditClickHandler = (evt) => {
@@ -342,4 +327,20 @@ export default class PointEditView extends SmartView {
     this.element.querySelector('.event__input--destination').addEventListener('input', this.#destinationChangeHandler);
     this.element.querySelector('.event__input--price').addEventListener('input', this.#basePriceChangeHandler);
   }
+
+  static parsePointToData = (point) => ({...point,
+    isDisabled: false,
+    isSaving: false,
+    isDeleting: false,
+  });
+
+  static parseDataToPoint = (data) => {
+    const point = {...data};
+
+    delete point.isDisabled;
+    delete point.isSaving;
+    delete point.isDeleting;
+
+    return point;
+  };
 }

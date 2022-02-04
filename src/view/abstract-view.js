@@ -1,5 +1,6 @@
 import { createElement } from '../helpers/render.js';
 import { SHAKE_ANIMATION_TIMEOUT } from '../helpers/consts.js';
+
 export default class AbstractView {
   #element = null;
   _callback = {};

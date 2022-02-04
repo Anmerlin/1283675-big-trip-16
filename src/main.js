@@ -14,7 +14,7 @@ import ApiService from './api/api-service.js';
 
 
 const URI = 'https://16.ecmascript.pages.academy/big-trip';
-const AUTHORIZATION = 'Basic qg50cx17iglrysd';
+const AUTHORIZATION = 'Basic qg50cx22iglrysd';
 
 let statisticComponent = null;
 

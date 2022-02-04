@@ -10,6 +10,7 @@ const createTripInfoTemplate = (points) => (points.length !== 0) ? `<section cla
       Total: &euro;&nbsp; <span class="trip-info__cost-value">${getTripCost(points)}</span>
     </p>
   </section>` : '';
+
 export default class TripInfoView extends AbstractView {
   #points = null;
 
