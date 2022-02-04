@@ -25,6 +25,15 @@ export default class ApiService {
       .then(ApiService.parseResponse);
   }
 
+  get initDataTrip() {
+    return Promise.all([
+      this.points,
+      this.offers,
+      this.destinations,
+    ])
+      .catch((err) => {throw new Error(err);});
+  }
+
   updatePoint = async (point) => {
     const response = await this.#load({
       url: `${DataPath.POINTS}/${point.id}`,

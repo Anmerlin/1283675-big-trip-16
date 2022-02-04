@@ -72,6 +72,10 @@ export default class PointPresenter {
     }
   }
 
+  removeEscKeyDownHandler = () => {
+    document.removeEventListener('keydown', this.#escKeyDownHandler);
+  }
+
   setViewState = (state) => {
     if (this.#mode === Mode.DEFAULT) {
       return;

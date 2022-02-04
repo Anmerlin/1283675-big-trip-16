@@ -78,6 +78,10 @@ export default class TripPresenter {
     document.querySelector('.trip-main__event-add-btn').disabled = true;
   }
 
+  removeEscKeyDownHandler = () => {
+    this.#pointPresenter.forEach((presenter) => presenter.removeEscKeyDownHandler());
+  }
+
   #handleModeChange = () => {
     this.#pointNewPresenter.destroy();
     this.#pointPresenter.forEach((presenter) => presenter.resetView());

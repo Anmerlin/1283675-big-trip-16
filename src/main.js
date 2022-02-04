@@ -12,9 +12,8 @@ import OffersModel from './model/offers-model';
 import DestinationsModel from './model/destinations-model.js';
 import ApiService from './api/api-service.js';
 
-
 const URI = 'https://16.ecmascript.pages.academy/big-trip';
-const AUTHORIZATION = 'Basic qg50cx22iglrysd';
+const AUTHORIZATION = 'Basic qg59cx22iglrysd';
 
 let statisticComponent = null;
 
@@ -28,9 +27,11 @@ const tripFilterElement = headerElement.querySelector('.trip-controls__filters')
 const tripEventsElement = mainElement.querySelector('.trip-events');
 const addNewPointButton = document.querySelector('.trip-main__event-add-btn');
 
-const pointsModel = new PointsModel(new ApiService(URI, AUTHORIZATION));
-const offersModel = new OffersModel(new ApiService(URI, AUTHORIZATION));
-const destinationsModel = new DestinationsModel(new ApiService(URI, AUTHORIZATION));
+const apiService = new ApiService(URI, AUTHORIZATION);
+
+const pointsModel = new PointsModel(apiService);
+const offersModel = new OffersModel();
+const destinationsModel = new DestinationsModel();
 const filterModel = new FilterModel();
 
 const navigationComponent = new NavigationView();
@@ -66,22 +67,30 @@ const handleNavigationClick = (navigationItem) => {
 const startApp = () => {
   tripInfoPresenter.init();
   filterPresenter.init();
+  render(navigationElement, navigationComponent);
+  navigationComponent.setNavigationClickHandler(handleNavigationClick);
   tripPresenter.init();
-
-  offersModel.init();
-  destinationsModel.init();
-  pointsModel.init().finally(() => {
-    render(navigationElement, navigationComponent);
-    navigationComponent.setNavigationClickHandler(handleNavigationClick);
-  });
 
   addNewPointButton.addEventListener('click', (evt) => {
     evt.preventDefault();
+    tripPresenter.removeEscKeyDownHandler();
     tripPresenter.destroy();
     filterModel.setFilter(UpdateType.MAJOR, FilterType.DEFAULT);
     tripPresenter.init();
     tripPresenter.createPoint(handlePointNewFormClose);
   });
 };
+
+apiService.initDataTrip
+  .then(([points, offers, destinations]) => {
+    offersModel.setOffers(offers);
+    destinationsModel.setDestinations(destinations);
+    pointsModel.setPoints(UpdateType.INIT, points);
+  })
+  .catch(() => {
+    pointsModel.setPoints(UpdateType.INIT, []);
+    render(navigationElement, navigationComponent);
+    navigationComponent.setNavigationClickHandler(handleNavigationClick);
+  });
 
 startApp();
